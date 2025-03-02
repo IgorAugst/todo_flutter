@@ -2,10 +2,19 @@ import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_flutter/item_page.dart';
+import 'package:todo_flutter/item_widget.dart';
+import 'package:todo_flutter/todo_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => TodoProvider()),
+    ],
+    child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +45,15 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
           title: Text("ToDo"),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary),
-      body: Text("corpo"),
+      body: Consumer(
+        builder: (context, todoProvider, child) {
+          return Column(
+            children: [
+              ItemWidget(index: 0),
+            ],
+          );
+        }
+      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       floatingActionButton: FloatingActionButton(
           onPressed: () {
