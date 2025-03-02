@@ -45,13 +45,11 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
           title: Text("ToDo"),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary),
-      body: Consumer(
+      body: Consumer<TodoProvider>(
         builder: (context, todoProvider, child) {
-          return Column(
-            children: [
-              ItemWidget(index: 0),
-            ],
-          );
+          return ListView.builder(itemCount: todoProvider.itemCount ,itemBuilder: (BuildContext context, int index) {
+            return ItemWidget(index: index);
+          });
         }
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,

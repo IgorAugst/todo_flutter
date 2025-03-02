@@ -12,14 +12,28 @@ class ItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       final item = todoProvider.items[index];
-      return Row(
-        children: [
-          Checkbox(
-              value: item.isDone,
-              onChanged: (bool? value) {
-                todoProvider.toggleItem(item);
-              })
-        ],
+      return GestureDetector(
+        onTap: () {
+          todoProvider.toggleItem(item);
+        },
+        child: Row(
+          children: [
+            Checkbox(
+                value: item.isDone,
+                onChanged: (bool? value) {
+                  todoProvider.toggleItem(item);
+                }),
+            RichText(
+              text: TextSpan(
+                text: item.title,
+                style: TextStyle(
+                  decoration: item.isDone ? TextDecoration.lineThrough : null,
+                  color: Colors.black
+                ),
+              )
+            )
+          ],
+        ),
       );
     });
   }
