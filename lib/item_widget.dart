@@ -11,7 +11,7 @@ class ItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       final item = todoProvider.items[index];
-      return GestureDetector(
+      return InkWell(
         onTap: () {
           todoProvider.toggleItem(item);
         },

@@ -14,18 +14,25 @@ class TodoProvider extends ChangeNotifier{
 
   List<TodoItem> get items => _items;
 
+  void sortItems(){
+    _items.sort();
+  }
+
   void addItem(TodoItem item){
     _items.add(item);
+    sortItems();
     notifyListeners();
   }
 
   void removeItem(TodoItem item) {
     _items.remove(item);
+    sortItems();
     notifyListeners();
   }
 
   void toggleItem(TodoItem item){
     item.toggleDone();
+    sortItems();
     notifyListeners();
   }
 }

@@ -1,4 +1,4 @@
-class TodoItem{
+class TodoItem implements Comparable{
   String title;
   bool isDone = false;
 
@@ -6,5 +6,16 @@ class TodoItem{
 
   void toggleDone(){
     isDone = !isDone;
+  }
+
+  @override
+  int compareTo(other) {
+    if(isDone && !other.isDone){
+      return 1;
+    }else if(!isDone && other.isDone){
+      return -1;
+    }else{
+      return title.compareTo(other.title);
+    }
   }
 }
