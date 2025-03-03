@@ -1,40 +1,56 @@
 import 'package:flutter/cupertino.dart';
 import 'package:todo_flutter/todo_item.dart';
 
-class TodoProvider extends ChangeNotifier{
+class TodoProvider extends ChangeNotifier {
   final List<TodoItem> _items = [];
+  final List<TodoItem> _doneItems = [];
+  final List<TodoItem> _undoneItems = [];
 
-  TodoProvider(){
-    _items.add(TodoItem(title: 'Item 1'));
-    _items.add(TodoItem(title: 'Item 2'));
-    _items.add(TodoItem(title: 'Item 3'));
+  TodoProvider() {
+    _addInitialItems();
+  }
+
+  void _addInitialItems() {
+    addItem(TodoItem(title: 'Item 1'));
+    addItem(TodoItem(title: 'Item 2'));
+    addItem(TodoItem(title: 'Item 3'));
   }
 
   int get itemCount => _items.length;
-  int get doneItemCount => doneItems.length;
-  int get undoneItemCount => undoneItems.length;
+  int get doneItemCount => _doneItems.length;
+  int get undoneItemCount => _undoneItems.length;
 
-  List<TodoItem> get items => _items;
-  List<TodoItem> get doneItems => _items.where((item) => item.isDone).toList();
-  List<TodoItem> get undoneItems => _items.where((item) => !item.isDone).toList();
+  List<TodoItem> get items => List.unmodifiable(_items);
+  List<TodoItem> get doneItems => List.unmodifiable(_doneItems);
+  List<TodoItem> get undoneItems => List.unmodifiable(_undoneItems);
 
-  void sortItems(){
-    _items.sort();
+  void _updateLists() {
+    _doneItems.clear();
+    _undoneItems.clear();
+    for (var item in _items) {
+      if (item.isDone) {
+        _doneItems.add(item);
+      } else {
+        _undoneItems.add(item);
+      }
+    }
   }
 
-  void addItem(TodoItem item){
+  void addItem(TodoItem item) {
     _items.add(item);
-    sortItems();
+    _updateLists();
     notifyListeners();
   }
 
   void removeItem(TodoItem item) {
     _items.remove(item);
+    _updateLists();
     notifyListeners();
   }
 
-  void toggleItem(TodoItem item){
+  void toggleItem(TodoItem item) {
     item.toggleDone();
+    _updateLists();
     notifyListeners();
   }
 }
