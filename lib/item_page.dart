@@ -10,6 +10,19 @@ class ItemPage extends StatelessWidget {
         title: Text("Adicionar"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Título',
+              ),
+            )
+          ],
+        )),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Salvar
