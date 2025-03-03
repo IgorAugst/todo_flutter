@@ -11,8 +11,12 @@ class TodoProvider extends ChangeNotifier{
   }
 
   int get itemCount => _items.length;
+  int get doneItemCount => doneItems.length;
+  int get undoneItemCount => undoneItems.length;
 
   List<TodoItem> get items => _items;
+  List<TodoItem> get doneItems => _items.where((item) => item.isDone).toList();
+  List<TodoItem> get undoneItems => _items.where((item) => !item.isDone).toList();
 
   void sortItems(){
     _items.sort();
@@ -26,13 +30,11 @@ class TodoProvider extends ChangeNotifier{
 
   void removeItem(TodoItem item) {
     _items.remove(item);
-    sortItems();
     notifyListeners();
   }
 
   void toggleItem(TodoItem item){
     item.toggleDone();
-    sortItems();
     notifyListeners();
   }
 }

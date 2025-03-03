@@ -43,12 +43,24 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
           title: Text("ToDo"),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary),
-      body: Consumer<TodoProvider>(
-        builder: (context, todoProvider, child) {
-          return ListView.builder(itemCount: todoProvider.itemCount ,itemBuilder: (BuildContext context, int index) {
-            return ItemWidget(index: index);
-          });
-        }
+      body: Column(
+        children: [
+          Consumer<TodoProvider>(
+            builder: (context, todoProvider, child) {
+              return ListView.builder(shrinkWrap: true ,itemCount: todoProvider.undoneItemCount ,itemBuilder: (BuildContext context, int index) {
+                return ItemWidget(index: index, isDone: false,);
+              });
+            }
+          ),
+          Divider(height: 10, thickness: 1, indent: 0, endIndent: 0, color: Colors.black12),
+          Consumer<TodoProvider>(
+            builder: (context, todoProvider, child) {
+              return ListView.builder(shrinkWrap: true ,itemCount: todoProvider.doneItemCount ,itemBuilder: (BuildContext context, int index) {
+                return ItemWidget(index: index, isDone: true,);
+              });
+            }
+          ),
+        ],
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       floatingActionButton: FloatingActionButton(
