@@ -36,21 +36,40 @@ class TodoProvider extends ChangeNotifier {
     }
   }
 
+  int _getInsertIndex(List<TodoItem> list, TodoItem item) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].compareTo(item) > 0) {
+        return i;
+      }
+    }
+    return list.length;
+  }
+
   void addItem(TodoItem item) {
     _items.add(item);
-    _updateLists();
+    final int idx = _getInsertIndex(_items, item);
+    if(item.isDone){
+      _doneItems.insert(idx, item);
+    }else{
+      _undoneItems.insert(idx, item);
+    }
     notifyListeners();
   }
 
   void removeItem(TodoItem item) {
-    _items.remove(item);
-    _updateLists();
+    final int idx = _getInsertIndex(_items, item);
+    if(item.isDone){
+      _doneItems.remove(item);
+    }else{
+      _undoneItems.remove(item);
+    }
     notifyListeners();
   }
 
   void toggleItem(TodoItem item) {
+    removeItem(item);
     item.toggleDone();
-    _updateLists();
+    addItem(item);
     notifyListeners();
   }
 }
