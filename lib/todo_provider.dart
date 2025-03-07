@@ -38,7 +38,7 @@ class TodoProvider extends ChangeNotifier {
 
   int _getInsertIndex(List<TodoItem> list, TodoItem item) {
     for (var i = 0; i < list.length; i++) {
-      if (list[i].compareTo(item) > 0) {
+      if (list[i].compareTo(item) >= 0) {
         return i;
       }
     }
@@ -47,10 +47,11 @@ class TodoProvider extends ChangeNotifier {
 
   void addItem(TodoItem item) {
     _items.add(item);
-    final int idx = _getInsertIndex(_items, item);
     if(item.isDone){
+      final int idx = _getInsertIndex(_doneItems, item);
       _doneItems.insert(idx, item);
     }else{
+      final int idx = _getInsertIndex(_undoneItems, item);
       _undoneItems.insert(idx, item);
     }
     notifyListeners();
