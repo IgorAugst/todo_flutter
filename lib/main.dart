@@ -39,6 +39,9 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<AnimatedListState> undoneListKey = GlobalKey<AnimatedListState>();
+    final GlobalKey<AnimatedListState> doneListKey = GlobalKey<AnimatedListState>();
+
     return Scaffold(
       appBar: AppBar(
           title: Text("ToDo"),
@@ -47,19 +50,37 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             Consumer<TodoProvider>(
-              builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: todoProvider.undoneItemCount ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(index: index, isDone: false,);
-                });
-              }
+                builder: (context, todoProvider, child) {
+                  return AnimatedList(
+                    key: undoneListKey,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    initialItemCount: todoProvider.undoneItems.length,
+                    itemBuilder: (context, index, animation) {
+                      return SizeTransition(
+                        sizeFactor: animation,
+                        child: ItemWidget(index: index, isDone: false),
+                      );
+                    },
+                  );
+                }
             ),
             Divider(height: 10, thickness: 1, indent: 0, endIndent: 0, color: Colors.black12),
             Consumer<TodoProvider>(
-              builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics() ,itemCount: todoProvider.doneItemCount ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(index: index, isDone: true,);
-                });
-              }
+                builder: (context, todoProvider, child) {
+                  return AnimatedList(
+                    key: doneListKey,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    initialItemCount: todoProvider.doneItems.length,
+                    itemBuilder: (context, index, animation) {
+                      return SizeTransition(
+                        sizeFactor: animation,
+                        child: ItemWidget(index: index, isDone: true),
+                      );
+                    },
+                  );
+                }
             ),
           ],
         ),
@@ -68,8 +89,8 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ItemPage())
+                context,
+                MaterialPageRoute(builder: (context) => ItemPage())
             );
           },
           tooltip: 'Adicionar',

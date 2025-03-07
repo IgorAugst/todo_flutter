@@ -6,6 +6,12 @@ class TodoProvider extends ChangeNotifier {
   final List<TodoItem> _doneItems = [];
   final List<TodoItem> _undoneItems = [];
 
+  final GlobalKey<AnimatedListState> _undoneListKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _doneListKey = GlobalKey<AnimatedListState>();
+
+  GlobalKey<AnimatedListState> get doneListKey => _doneListKey;
+  GlobalKey<AnimatedListState> get undoneListKey => _undoneListKey;
+
   TodoProvider() {
     _addInitialItems();
   }
@@ -50,9 +56,11 @@ class TodoProvider extends ChangeNotifier {
     if(item.isDone){
       final int idx = _getInsertIndex(_doneItems, item);
       _doneItems.insert(idx, item);
+      _doneListKey.currentState?.insertItem(idx);
     }else{
       final int idx = _getInsertIndex(_undoneItems, item);
       _undoneItems.insert(idx, item);
+      _undoneListKey.currentState?.insertItem(idx);
     }
     notifyListeners();
   }
