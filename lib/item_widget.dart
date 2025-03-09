@@ -4,22 +4,13 @@ import 'package:todo_flutter/todo_provider.dart';
 import 'package:provider/provider.dart';
 
 class ItemWidget extends StatelessWidget {
-  final int index;
-  final bool isDone;
+  final TodoItem item;
 
-  const ItemWidget({super.key, required this.index, this.isDone = false});
+  const ItemWidget({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
-      late final TodoItem item;
-
-      if(isDone){
-        item = todoProvider.doneItems[index];
-      }else{
-        item = todoProvider.undoneItems[index];
-      }
-
       return InkWell(
         onTap: () {
           todoProvider.toggleItem(item);

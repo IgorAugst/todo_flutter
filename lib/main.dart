@@ -48,16 +48,16 @@ class MyHomePage extends StatelessWidget {
           children: [
             Consumer<TodoProvider>(
               builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: todoProvider.undoneItemCount ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(index: index, isDone: false,);
+                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: todoProvider.getTodoItemCount(done: false) ,itemBuilder: (BuildContext context, int index) {
+                  return ItemWidget(item: todoProvider.getTodoItems(done: false)[index]);
                 });
               }
             ),
             Divider(height: 10, thickness: 1, indent: 0, endIndent: 0, color: Colors.black12),
             Consumer<TodoProvider>(
               builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics() ,itemCount: todoProvider.doneItemCount ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(index: index, isDone: true,);
+                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics() ,itemCount: todoProvider.getTodoItemCount(done: true) ,itemBuilder: (BuildContext context, int index) {
+                  return ItemWidget(item: todoProvider.getTodoItems(done: true)[index]);
                 });
               }
             ),
