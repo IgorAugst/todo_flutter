@@ -1,16 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_flutter/category.dart';
 import 'package:todo_flutter/item_page.dart';
 import 'package:todo_flutter/item_widget.dart';
 import 'package:todo_flutter/todo_provider.dart';
 
 void main() {
   runApp(
-    MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => TodoProvider()),
-    ],
-    child: MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TodoProvider()),
+      ],
+      child: MyApp(),
     ),
   );
 }
@@ -33,7 +34,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -43,10 +43,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  Category _selectedCategory = Category();
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index, Category category) {
     setState(() {
       _selectedIndex = index;
+      _selectedCategory = category;
     });
   }
 
@@ -54,61 +56,49 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
 
-    return Scaffold(
-      appBar: AppBar(
-          title: Text("ToDo"),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              tileColor: _selectedIndex == 0 ? selectedColor : null,
-              title: Text("Início"),
-              onTap: () {
-                _onItemTapped(0);
-              },
-            ),
-            ListTile(
-              tileColor: _selectedIndex == 1 ? selectedColor : null,
-              title: Text("Concluídos"),
-              onTap: () {
-                _onItemTapped(1);
-              },
-            ),
-          ],
+    return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+      return Scaffold(
+        appBar: AppBar(
+            title: Text("ToDo"),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary),
+        drawer: Drawer(
+          child: ListView.builder(
+            itemCount: todoProvider.categoryCount,
+            itemBuilder: (context, index){
+              return ListTile(
+                tileColor: index == _selectedIndex ? selectedColor : null,
+                title: Text(todoProvider.categories[index].name),
+                onTap: (){
+                  _onItemTapped(index, todoProvider.categories[index]);
+                  Navigator.pop(context);
+                },
+              );
+            },
+          )
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Consumer<TodoProvider>(
-              builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics(), itemCount: todoProvider.getTodoItemCount(done: false) ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(item: todoProvider.getTodoItems(done: false)[index]);
-                });
-              }
-            ),
-            Divider(height: 10, thickness: 1, indent: 0, endIndent: 0, color: Colors.black12),
-            Consumer<TodoProvider>(
-              builder: (context, todoProvider, child) {
-                return ListView.builder(shrinkWrap: true, physics: NeverScrollableScrollPhysics() ,itemCount: todoProvider.getTodoItemCount(done: true) ,itemBuilder: (BuildContext context, int index) {
-                  return ItemWidget(item: todoProvider.getTodoItems(done: true)[index]);
-                });
-              }
-            ),
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: todoProvider.getTodoItemCount(done: _selectedCategory.isDone),
+                  itemBuilder: (BuildContext context, int index) {
+                    return ItemWidget(
+                        item: todoProvider.getTodoItems(done: _selectedCategory.isDone)[index]);
+                  }),
+            ],
+          ),
         ),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ItemPage())
-            );
-          },
-          tooltip: 'Adicionar',
-          child: Icon(Icons.add)),
-    );
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => ItemPage()));
+            },
+            tooltip: 'Adicionar',
+            child: Icon(Icons.add)),
+      );
+    });
   }
 }

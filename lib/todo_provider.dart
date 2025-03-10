@@ -1,12 +1,19 @@
 import 'package:flutter/cupertino.dart';
+import 'package:todo_flutter/category.dart';
 import 'package:todo_flutter/todo_item.dart';
 
 class TodoProvider extends ChangeNotifier {
-  final List<String> _categories = ['All', 'Done'];
+  final List<Category> _categories = [];
   final List<TodoItem> _items = [];
 
   TodoProvider() {
     _addInitialItems();
+    _addDefaultCategories();
+  }
+
+  void _addDefaultCategories() {
+    _categories.add(Category(name: 'All', isDone: false));
+    _categories.add(Category(name: 'Done', isDone: true));
   }
 
   List<TodoItem> getTodoItems({bool done = false}) {
@@ -24,8 +31,10 @@ class TodoProvider extends ChangeNotifier {
   }
 
   int get itemCount => _items.length;
-
   List<TodoItem> get items => List.unmodifiable(_items);
+
+  int get categoryCount => _categories.length;
+  List<Category> get categories => List.unmodifiable(_categories);
 
   void addItem(TodoItem item) {
     _items.add(item);
