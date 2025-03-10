@@ -34,15 +34,50 @@ class MyApp extends StatelessWidget {
 }
 
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
+
     return Scaffold(
       appBar: AppBar(
           title: Text("ToDo"),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              tileColor: _selectedIndex == 0 ? selectedColor : null,
+              title: Text("Início"),
+              onTap: () {
+                _onItemTapped(0);
+              },
+            ),
+            ListTile(
+              tileColor: _selectedIndex == 1 ? selectedColor : null,
+              title: Text("Concluídos"),
+              onTap: () {
+                _onItemTapped(1);
+              },
+            ),
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

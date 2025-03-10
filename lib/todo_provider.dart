@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:todo_flutter/todo_item.dart';
 
 class TodoProvider extends ChangeNotifier {
+  final List<String> _categories = ['All', 'Done'];
   final List<TodoItem> _items = [];
 
   TodoProvider() {
