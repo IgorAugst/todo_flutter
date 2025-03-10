@@ -44,11 +44,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Category _selectedCategory = Category();
+  late TodoProvider _todoProvider;
 
-  void _onItemTapped(int index, Category category) {
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _selectedCategory = category;
+      _selectedCategory = _todoProvider.categories[index];
     });
   }
 
@@ -57,9 +58,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+      _todoProvider = todoProvider;
       return Scaffold(
         appBar: AppBar(
-            title: Text("ToDo"),
+            title: Text(_selectedCategory.name),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary),
         drawer: Drawer(
           child: ListView.builder(
@@ -69,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 tileColor: index == _selectedIndex ? selectedColor : null,
                 title: Text(todoProvider.categories[index].name),
                 onTap: (){
-                  _onItemTapped(index, todoProvider.categories[index]);
+                  _onItemTapped(index);
                   Navigator.pop(context);
                 },
               );
@@ -94,7 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ItemPage()));
+                  context, MaterialPageRoute(builder: (context) => ItemPage())).then((_){
+                    _onItemTapped(0);
+              });
             },
             tooltip: 'Adicionar',
             child: Icon(Icons.add)),
