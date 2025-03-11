@@ -12,16 +12,20 @@ class TodoProvider extends ChangeNotifier {
   }
 
   void _addDefaultCategories() {
-    _categories.add(Category(name: 'All', isDone: false));
+    _categories.add(Category(name: 'All', isDone: null));
     _categories.add(Category(name: 'Done', isDone: true));
+    _categories.add(Category(name: 'Not Done', isDone: false));
   }
 
-  List<TodoItem> getTodoItems({bool done = false}) {
-    return _items.where((item) => item.isDone == done).toList();
+  List<TodoItem> getTodoItems({Category category = const Category()}) {
+    if (category.isDone == null){
+      return _items;
+    }
+      return _items.where((item) => item.isDone == category.isDone).toList();
   }
 
-  int getTodoItemCount({bool done = false}) {
-    return getTodoItems(done: done).length;
+  int getTodoItemCount({Category category = const Category()}) {
+    return getTodoItems(category: category).length;
   }
 
   void _addInitialItems() {

@@ -84,10 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: todoProvider.getTodoItemCount(done: _selectedCategory.isDone),
+                  itemCount: todoProvider.getTodoItemCount(category: _selectedCategory),
                   itemBuilder: (BuildContext context, int index) {
                     return ItemWidget(
-                        item: todoProvider.getTodoItems(done: _selectedCategory.isDone)[index]);
+                        item: todoProvider.getTodoItems(category: _selectedCategory)[index]);
                   }),
             ],
           ),
