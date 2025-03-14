@@ -59,49 +59,55 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       _todoProvider = todoProvider;
-      return Scaffold(
-        appBar: AppBar(
-            title: Text(_selectedCategory.name),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary),
-        drawer: Drawer(
-          child: ListView.builder(
-            itemCount: todoProvider.categoryCount,
-            itemBuilder: (context, index){
-              return ListTile(
-                tileColor: index == _selectedIndex ? selectedColor : null,
-                title: Text(todoProvider.categories[index].name),
-                onTap: (){
-                  _onItemTapped(index);
-                  Navigator.pop(context);
-                },
-              );
-            },
-          )
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: todoProvider.getTodoItemCount(category: _selectedCategory),
-                  itemBuilder: (BuildContext context, int index) {
-                    return ItemWidget(
-                        item: todoProvider.getTodoItems(category: _selectedCategory)[index]);
-                  }),
-            ],
+      return PopScope(
+        canPop: _selectedIndex == 0,
+        onPopInvokedWithResult: (didPop, result){
+          _onItemTapped(0);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+              title: Text(_selectedCategory.name),
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary),
+          drawer: Drawer(
+            child: ListView.builder(
+              itemCount: todoProvider.categoryCount,
+              itemBuilder: (context, index){
+                return ListTile(
+                  tileColor: index == _selectedIndex ? selectedColor : null,
+                  title: Text(todoProvider.categories[index].name),
+                  onTap: (){
+                    _onItemTapped(index);
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            )
           ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: todoProvider.getTodoItemCount(category: _selectedCategory),
+                    itemBuilder: (BuildContext context, int index) {
+                      return ItemWidget(
+                          item: todoProvider.getTodoItems(category: _selectedCategory)[index]);
+                    }),
+              ],
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ItemPage())).then((_){
+                      _onItemTapped(0);
+                });
+              },
+              tooltip: 'Adicionar',
+              child: Icon(Icons.add)),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ItemPage())).then((_){
-                    _onItemTapped(0);
-              });
-            },
-            tooltip: 'Adicionar',
-            child: Icon(Icons.add)),
       );
     });
   }
