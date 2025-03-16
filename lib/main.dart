@@ -92,7 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: todoProvider.getTodoItemCount(category: _selectedCategory),
                     itemBuilder: (BuildContext context, int index) {
                       return ItemWidget(
-                          item: todoProvider.getTodoItems(category: _selectedCategory)[index]);
+                          item: todoProvider.getTodoItems(category: _selectedCategory)[index],
+                          onToggle: todoProvider.toggleItem,
+                      );
                     }),
               ],
             ),
