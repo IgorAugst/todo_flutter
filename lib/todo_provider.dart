@@ -17,6 +17,10 @@ class TodoProvider extends ChangeNotifier {
     _categories.add(Category(name: 'Not Done', isDone: false));
   }
 
+  void _sortItems() {
+    _items.sort();
+  }
+
   List<TodoItem> getTodoItems({Category category = const Category()}) {
     if (category.isDone == null){
       return _items;
@@ -42,6 +46,7 @@ class TodoProvider extends ChangeNotifier {
 
   void addItem(TodoItem item) {
     _items.add(item);
+    _sortItems();
     notifyListeners();
   }
 
@@ -52,6 +57,7 @@ class TodoProvider extends ChangeNotifier {
 
   void toggleItem(TodoItem item) {
     item.toggleDone();
+    _sortItems();
     notifyListeners();
   }
 }

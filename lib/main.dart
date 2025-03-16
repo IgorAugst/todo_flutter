@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_flutter/category.dart';
 import 'package:todo_flutter/item_page.dart';
 import 'package:todo_flutter/item_widget.dart';
+import 'package:todo_flutter/todo_item.dart';
 import 'package:todo_flutter/todo_provider.dart';
 
 void main() {
@@ -53,6 +54,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _openItemPage({required BuildContext context, TodoItem? item}) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ItemPage()))
+        .then((_) {
+      _onItemTapped(0);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
@@ -61,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _todoProvider = todoProvider;
       return PopScope(
         canPop: _selectedIndex == 0,
-        onPopInvokedWithResult: (didPop, result){
+        onPopInvokedWithResult: (didPop, result) {
           _onItemTapped(0);
         },
         child: Scaffold(
@@ -69,32 +77,35 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text(_selectedCategory.name),
               backgroundColor: Theme.of(context).colorScheme.inversePrimary),
           drawer: Drawer(
-            child: ListView.builder(
-              itemCount: todoProvider.categoryCount,
-              itemBuilder: (context, index){
-                return ListTile(
-                  tileColor: index == _selectedIndex ? selectedColor : null,
-                  title: Text(todoProvider.categories[index].name),
-                  onTap: (){
-                    _onItemTapped(index);
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            )
-          ),
+              child: ListView.builder(
+            itemCount: todoProvider.categoryCount,
+            itemBuilder: (context, index) {
+              return ListTile(
+                tileColor: index == _selectedIndex ? selectedColor : null,
+                title: Text(todoProvider.categories[index].name),
+                onTap: () {
+                  _onItemTapped(index);
+                  Navigator.pop(context);
+                },
+              );
+            },
+          )),
           body: SingleChildScrollView(
             child: Column(
               children: [
                 ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: todoProvider.getTodoItemCount(category: _selectedCategory),
+                    itemCount: todoProvider.getTodoItemCount(
+                        category: _selectedCategory),
                     itemBuilder: (BuildContext context, int index) {
                       return ItemWidget(
-                          item: todoProvider.getTodoItems(category: _selectedCategory)[index],
+                          item: todoProvider.getTodoItems(
+                              category: _selectedCategory)[index],
                           onToggle: todoProvider.toggleItem,
-                      );
+                          onTap: (item) {
+                            _openItemPage(context: context, item: item);
+                          });
                     }),
               ],
             ),
@@ -102,10 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           floatingActionButton: FloatingActionButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => ItemPage())).then((_){
-                      _onItemTapped(0);
-                });
+                _openItemPage(context: context);
               },
               tooltip: 'Adicionar',
               child: Icon(Icons.add)),

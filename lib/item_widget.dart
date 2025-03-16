@@ -4,14 +4,17 @@ import 'package:todo_flutter/todo_item.dart';
 class ItemWidget extends StatelessWidget {
   final TodoItem item;
   final Function(TodoItem) onToggle;
+  final Function(TodoItem)? onTap;
 
-  const ItemWidget({super.key, required this.item, required this.onToggle});
+  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        onToggle(item);
+        if (onTap != null) {
+          onTap!(item);
+        }
       },
       child: Row(
         children: [

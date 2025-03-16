@@ -15,7 +15,7 @@ class TodoItem implements Comparable{
     }else if(!isDone && other.isDone){
       return -1;
     }else{
-      return title.compareTo(other.title);
+      return title.toLowerCase().compareTo(other.title.toString().toLowerCase());
     }
   }
 }
