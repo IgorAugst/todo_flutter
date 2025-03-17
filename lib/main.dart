@@ -55,8 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _openItemPage({required BuildContext context, TodoItem? item}) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ItemPage()))
-        .then((_) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ItemPage(
+                title: item == null ? "Adicionar" : "Editar",
+                item: item))).then((_) {
       _onItemTapped(0);
     });
   }

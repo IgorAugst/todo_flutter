@@ -60,4 +60,10 @@ class TodoProvider extends ChangeNotifier {
     _sortItems();
     notifyListeners();
   }
+
+  void updateItem(TodoItem oldItem, TodoItem newItem){
+    oldItem.updateFrom(newItem);
+    _sortItems();
+    notifyListeners();
+  }
 }

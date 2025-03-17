@@ -4,17 +4,20 @@ import 'package:todo_flutter/todo_item.dart';
 import 'package:todo_flutter/todo_provider.dart';
 
 class ItemPage extends StatelessWidget {
-  const ItemPage({super.key});
+  final String title;
+  final TodoItem? item;
+
+  const ItemPage({super.key, required this.title, this.item});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController _controller = TextEditingController(text: item?.title);
 
     return Consumer<TodoProvider>(
       builder: (context, todoProvider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Adicionar"),
+            title: Text(title),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           ),
           body: Padding(
@@ -23,6 +26,7 @@ class ItemPage extends StatelessWidget {
               children: [
                 TextField(
                   controller: _controller,
+
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Título',
@@ -37,7 +41,11 @@ class ItemPage extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              todoProvider.addItem(TodoItem(title: _controller.text));
+              if (item != null){
+                todoProvider.updateItem(item!, TodoItem(title: _controller.text));
+              } else {
+                todoProvider.addItem(TodoItem(title: _controller.text));
+              }
               Navigator.pop(context);
             },
             tooltip: "Salvar",

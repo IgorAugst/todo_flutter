@@ -8,6 +8,11 @@ class TodoItem implements Comparable{
     isDone = !isDone;
   }
 
+  void updateFrom(TodoItem item){
+    title = item.title;
+    isDone = item.isDone;
+  }
+
   @override
   int compareTo(other) {
     if(isDone && !other.isDone){
