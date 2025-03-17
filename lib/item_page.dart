@@ -26,7 +26,7 @@ class ItemPage extends StatelessWidget {
               children: [
                 TextField(
                   controller: _controller,
-
+                  autofocus: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Título',
