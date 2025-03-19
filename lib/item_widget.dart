@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_flutter/todo_item.dart';
 
-class ItemWidget extends StatelessWidget {
+class ItemWidget extends StatefulWidget {
   final TodoItem item;
   final Function(TodoItem) onToggle;
   final Function(TodoItem)? onTap;
@@ -9,25 +9,38 @@ class ItemWidget extends StatelessWidget {
   const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap});
 
   @override
+  State<ItemWidget> createState() => _ItemWidgetState();
+}
+
+class _ItemWidgetState extends State<ItemWidget> {
+  bool selected = false;
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
+      splashColor: selected ? Colors.red : Colors.blue,
       onTap: () {
-        if (onTap != null) {
-          onTap!(item);
+        if (widget.onTap != null) {
+          widget.onTap!(widget.item);
         }
+      },
+      onLongPress: () {
+        setState(() {
+          selected = !selected;
+        });
       },
       child: Row(
         children: [
           Checkbox(
-              value: item.isDone,
+              value: widget.item.isDone,
               onChanged: (bool? value) {
-                onToggle(item);
+                widget.onToggle(widget.item);
               }),
           RichText(
               text: TextSpan(
-            text: item.title,
+            text: widget.item.title,
             style: TextStyle(
-                decoration: item.isDone ? TextDecoration.lineThrough : null,
+                decoration: widget.item.isDone ? TextDecoration.lineThrough : null,
                 color: Colors.black),
           ))
         ],
