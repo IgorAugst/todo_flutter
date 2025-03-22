@@ -5,6 +5,8 @@ import 'package:todo_flutter/todo_item.dart';
 class TodoProvider extends ChangeNotifier {
   final List<Category> _categories = [];
   final List<TodoItem> _items = [];
+  final List<TodoItem> _selectedItems = [];
+
 
   TodoProvider() {
     _addInitialItems();
@@ -65,5 +67,21 @@ class TodoProvider extends ChangeNotifier {
     oldItem.updateFrom(newItem);
     _sortItems();
     notifyListeners();
+  }
+
+  void toggleSelection(TodoItem todoItem){
+    if(_selectedItems.contains(todoItem)){
+      _selectedItems.remove(todoItem);
+    }else{
+      _selectedItems.add(todoItem);
+    }
+  }
+
+  bool isSelected(TodoItem todoItem) {
+    return _selectedItems.contains(todoItem)
+  }
+
+  void clearSelection() {
+    _selectedItems.clear();
   }
 }
