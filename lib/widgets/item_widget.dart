@@ -5,30 +5,27 @@ class ItemWidget extends StatefulWidget {
   final TodoItem item;
   final Function(TodoItem) onToggle;
   final Function(TodoItem)? onTap;
+  final Function(TodoItem)? onLongPress;
 
-  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap});
+  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap, this.onLongPress});
 
   @override
   State<ItemWidget> createState() => _ItemWidgetState();
 }
 
 class _ItemWidgetState extends State<ItemWidget> {
-  bool selected = false;
-
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: selected ? Theme.of(context).colorScheme.secondaryContainer : null,
-      child: InkWell(
+      return InkWell(
         onTap: () {
           if (widget.onTap != null) {
             widget.onTap!(widget.item);
           }
         },
         onLongPress: () {
-          setState(() {
-            selected = !selected;
-          });
+          if (widget.onLongPress != null) {
+            widget.onLongPress!(widget.item);
+          }
         },
         child: Row(
           children: [
@@ -46,7 +43,6 @@ class _ItemWidgetState extends State<ItemWidget> {
             ))
           ],
         ),
-      ),
-    );
+      );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/pages/item_page.dart';
+import 'package:todo_flutter/providers/selection_provider.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
@@ -11,6 +12,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TodoProvider()),
+        ChangeNotifierProvider(create: (_) => SelectionProvider())
       ],
       child: MyApp(),
     ),
@@ -46,6 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   Category _selectedCategory = Category();
   late TodoProvider _todoProvider;
+  late SelectionProvider _selectionProvider;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -65,12 +68,21 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _onItemLongPress(TodoItem item) {
+    setState(() {
+      _selectionProvider.toggleSelection(item);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
 
-    return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
+    return Consumer2<TodoProvider, SelectionProvider>(
+        builder: (context, todoProvider, selectionProvider, child) {
       _todoProvider = todoProvider;
+      _selectionProvider = selectionProvider;
+
       return PopScope(
         canPop: _selectedIndex == 0,
         onPopInvokedWithResult: (didPop, result) {
@@ -103,13 +115,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: todoProvider.getTodoItemCount(
                         category: _selectedCategory),
                     itemBuilder: (BuildContext context, int index) {
-                      return ItemWidget(
-                          item: todoProvider.getTodoItems(
-                              category: _selectedCategory)[index],
+                      var item = todoProvider.getTodoItems(
+                          category: _selectedCategory)[index];
+
+                      return Material(
+                        color: selectionProvider.checkSelection(item)
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : null,
+                        child: ItemWidget(
+                          item: item,
                           onToggle: todoProvider.toggleItem,
                           onTap: (item) {
                             _openItemPage(context: context, item: item);
-                          });
+                          },
+                          onLongPress: (item) {
+                            _onItemLongPress(item);
+                          },
+                        ),
+                      );
                     }),
               ],
             ),
