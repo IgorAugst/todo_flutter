@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_flutter/category.dart';
-import 'package:todo_flutter/item_page.dart';
-import 'package:todo_flutter/item_widget.dart';
-import 'package:todo_flutter/todo_item.dart';
-import 'package:todo_flutter/todo_provider.dart';
+import 'package:todo_flutter/models/category.dart';
+import 'package:todo_flutter/pages/item_page.dart';
+import 'package:todo_flutter/widgets/item_widget.dart';
+import 'package:todo_flutter/models/todo_item.dart';
+import 'package:todo_flutter/providers/todo_provider.dart';
 
 void main() {
   runApp(

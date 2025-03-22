@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:todo_flutter/category.dart';
-import 'package:todo_flutter/todo_item.dart';
+import 'package:todo_flutter/models/category.dart';
+import 'package:todo_flutter/models/todo_item.dart';
 
 class TodoProvider extends ChangeNotifier {
   final List<Category> _categories = [];

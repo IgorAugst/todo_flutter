@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_flutter/todo_item.dart';
+import 'package:todo_flutter/models/todo_item.dart';
 
 class ItemWidget extends StatefulWidget {
   final TodoItem item;

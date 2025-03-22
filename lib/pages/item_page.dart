@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_flutter/todo_item.dart';
-import 'package:todo_flutter/todo_provider.dart';
+import 'package:todo_flutter/models/todo_item.dart';
+import 'package:todo_flutter/providers/todo_provider.dart';
 
 class ItemPage extends StatelessWidget {
   final String title;
