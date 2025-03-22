@@ -17,33 +17,35 @@ class _ItemWidgetState extends State<ItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      splashColor: selected ? Colors.red : Colors.blue,
-      onTap: () {
-        if (widget.onTap != null) {
-          widget.onTap!(widget.item);
-        }
-      },
-      onLongPress: () {
-        setState(() {
-          selected = !selected;
-        });
-      },
-      child: Row(
-        children: [
-          Checkbox(
-              value: widget.item.isDone,
-              onChanged: (bool? value) {
-                widget.onToggle(widget.item);
-              }),
-          RichText(
-              text: TextSpan(
-            text: widget.item.title,
-            style: TextStyle(
-                decoration: widget.item.isDone ? TextDecoration.lineThrough : null,
-                color: Colors.black),
-          ))
-        ],
+    return Material(
+      color: selected ? Theme.of(context).colorScheme.secondaryContainer : null,
+      child: InkWell(
+        onTap: () {
+          if (widget.onTap != null) {
+            widget.onTap!(widget.item);
+          }
+        },
+        onLongPress: () {
+          setState(() {
+            selected = !selected;
+          });
+        },
+        child: Row(
+          children: [
+            Checkbox(
+                value: widget.item.isDone,
+                onChanged: (bool? value) {
+                  widget.onToggle(widget.item);
+                }),
+            RichText(
+                text: TextSpan(
+              text: widget.item.title,
+              style: TextStyle(
+                  decoration: widget.item.isDone ? TextDecoration.lineThrough : null,
+                  color: Colors.black),
+            ))
+          ],
+        ),
       ),
     );
   }
