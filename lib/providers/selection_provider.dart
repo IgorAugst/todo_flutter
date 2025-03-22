@@ -21,4 +21,8 @@ class SelectionProvider extends ChangeNotifier{
   void clearSelection(){
     _selectedItems.clear();
   }
+
+  int length(){
+    return _selectedItems.length;
+  }
 }

@@ -74,6 +74,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _deleteSelection() {
+    for (var item in _selectionProvider.selectedItems) {
+      _todoProvider.removeItem(item);
+      _selectionProvider.clearSelection();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
@@ -90,8 +97,19 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Scaffold(
           appBar: AppBar(
-              title: Text(_selectedCategory.name),
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary),
+            title: Text(_selectedCategory.name),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            actions: <Widget>[
+              Visibility(
+                visible: _selectionProvider.length() != 0,
+                child: IconButton(
+                    onPressed: () {
+                      _deleteSelection();
+                    },
+                    icon: const Icon(Icons.delete)),
+              )
+            ],
+          ),
           drawer: Drawer(
               child: ListView.builder(
             itemCount: todoProvider.categoryCount,
