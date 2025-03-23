@@ -44,7 +44,7 @@ class _ItemWidgetState extends State<ItemWidget> {
               text: widget.item.title,
               style: TextStyle(
                   decoration: widget.item.isDone ? TextDecoration.lineThrough : null,
-                  color: Colors.black),
+                  color: Theme.of(context).colorScheme.onSurface),
             ))
           ],
         ),
