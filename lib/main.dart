@@ -6,6 +6,7 @@ import 'package:todo_flutter/providers/selection_provider.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
+import 'package:flutter/foundation.dart' as Foundation;
 
 void main() {
   runApp(
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: Foundation.kDebugMode,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
         useMaterial3: true,
