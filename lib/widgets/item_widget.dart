@@ -6,8 +6,9 @@ class ItemWidget extends StatefulWidget {
   final Function(TodoItem) onToggle;
   final Function(TodoItem)? onTap;
   final Function(TodoItem)? onLongPress;
+  final bool showCheckbox;
 
-  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap, this.onLongPress});
+  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap, this.onLongPress, this.showCheckbox=true});
 
   @override
   State<ItemWidget> createState() => _ItemWidgetState();
@@ -29,11 +30,15 @@ class _ItemWidgetState extends State<ItemWidget> {
         },
         child: Row(
           children: [
-            Checkbox(
-                value: widget.item.isDone,
-                onChanged: (bool? value) {
-                  widget.onToggle(widget.item);
-                }),
+            AnimatedOpacity(
+              opacity: widget.showCheckbox ? 1 : 0,
+              duration: Duration(milliseconds: 200),
+              child: Checkbox(
+                  value: widget.item.isDone,
+                  onChanged: (bool? value) {
+                    widget.onToggle(widget.item);
+                  }),
+            ),
             RichText(
                 text: TextSpan(
               text: widget.item.title,
