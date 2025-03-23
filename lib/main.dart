@@ -49,35 +49,44 @@ class _MyHomePageState extends State<MyHomePage> {
   Category _selectedCategory = Category();
   late TodoProvider _todoProvider;
   late SelectionProvider _selectionProvider;
+  bool _isSelecting = false;
 
-  void _onItemTapped(int index) {
+  void _selectDrawer(int index) {
     setState(() {
       _selectedIndex = index;
       _selectedCategory = _todoProvider.categories[index];
     });
   }
 
-  void _openItemPage({required BuildContext context, TodoItem? item}) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ItemPage(
-                title: item == null ? "Adicionar" : "Editar",
-                item: item))).then((_) {
-      _onItemTapped(0);
-    });
+  void _openItemTap({required BuildContext context, TodoItem? item}) {
+    if(!_isSelecting || item == null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ItemPage(
+                      title: item == null ? "Adicionar" : "Editar",
+                      item: item))).then((_) {
+        _selectDrawer(0);
+      });
+    }else{
+      _onItemLongPress(item);
+    }
   }
 
   void _onItemLongPress(TodoItem item) {
     setState(() {
       _selectionProvider.toggleSelection(item);
     });
+
+    _isSelecting = _selectionProvider.length() > 0;
   }
 
   void _deleteSelection() {
     for (var item in _selectionProvider.selectedItems) {
       _todoProvider.removeItem(item);
       _selectionProvider.clearSelection();
+      _isSelecting = false;
     }
   }
 
@@ -93,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return PopScope(
         canPop: _selectedIndex == 0,
         onPopInvokedWithResult: (didPop, result) {
-          _onItemTapped(0);
+          _selectDrawer(0);
         },
         child: Scaffold(
           appBar: AppBar(
@@ -118,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 tileColor: index == _selectedIndex ? selectedColor : null,
                 title: Text(todoProvider.categories[index].name),
                 onTap: () {
-                  _onItemTapped(index);
+                  _selectDrawer(index);
                   Navigator.pop(context);
                 },
               );
@@ -144,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           item: item,
                           onToggle: todoProvider.toggleItem,
                           onTap: (item) {
-                            _openItemPage(context: context, item: item);
+                            _openItemTap(context: context, item: item);
                           },
                           onLongPress: (item) {
                             _onItemLongPress(item);
@@ -158,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           floatingActionButton: FloatingActionButton(
               onPressed: () {
-                _openItemPage(context: context);
+                _openItemTap(context: context);
               },
               tooltip: 'Adicionar',
               child: Icon(Icons.add)),
