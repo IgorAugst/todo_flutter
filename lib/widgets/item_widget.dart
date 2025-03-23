@@ -35,9 +35,9 @@ class _ItemWidgetState extends State<ItemWidget> {
               duration: Duration(milliseconds: 200),
               child: Checkbox(
                   value: widget.item.isDone,
-                  onChanged: (bool? value) {
+                  onChanged: widget.showCheckbox ? (bool? value) {
                     widget.onToggle(widget.item);
-                  }),
+                  } : null),
             ),
             RichText(
                 text: TextSpan(
