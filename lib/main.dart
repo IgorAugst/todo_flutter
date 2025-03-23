@@ -95,6 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _deleteItem(TodoItem item){
+    _todoProvider.removeItem(item);
+  }
+
   void _clearSelection(){
     setState(() {
       _selectionProvider.clearSelection();
@@ -168,20 +172,29 @@ class _MyHomePageState extends State<MyHomePage> {
                         var item = todoProvider.getTodoItems(
                             category: _selectedCategory)[index];
 
-                        return Material(
-                          color: selectionProvider.checkSelection(item)
-                              ? Theme.of(context).colorScheme.secondaryContainer
-                              : null,
-                          child: ItemWidget(
-                            item: item,
-                            onToggle: todoProvider.toggleItem,
-                            onTap: (item) {
-                              _openItemTap(context: context, item: item);
-                            },
-                            onLongPress: (item) {
-                              _onItemLongPress(item);
-                            },
-                            showCheckbox: !_isSelecting,
+                        return Dismissible(
+                          background: Container(
+                            color: Colors.red
+                          ),
+                          key: ValueKey<TodoItem>(item),
+                          onDismissed: (DismissDirection direction) {
+                            _deleteItem(item);
+                          },
+                          child: Material(
+                            color: selectionProvider.checkSelection(item)
+                                ? Theme.of(context).colorScheme.secondaryContainer
+                                : null,
+                            child: ItemWidget(
+                              item: item,
+                              onToggle: todoProvider.toggleItem,
+                              onTap: (item) {
+                                _openItemTap(context: context, item: item);
+                              },
+                              onLongPress: (item) {
+                                _onItemLongPress(item);
+                              },
+                              showCheckbox: !_isSelecting,
+                            ),
                           ),
                         );
                       }),
