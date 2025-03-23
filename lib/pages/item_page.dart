@@ -21,9 +21,9 @@ class ItemPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _controller =
+    final TextEditingController controller =
         TextEditingController(text: item?.title);
-    final _formItemPageKey = GlobalKey<FormState>();
+    final formItemPageKey = GlobalKey<FormState>();
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
@@ -34,11 +34,11 @@ class ItemPage extends StatelessWidget {
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
-              key: _formItemPageKey,
+              key: formItemPageKey,
               child: Column(
                 children: [
                   TextFormField(
-                    controller: _controller,
+                    controller: controller,
                     autofocus: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -52,8 +52,8 @@ class ItemPage extends StatelessWidget {
                       return null;
                     },
                     onFieldSubmitted: (value) {
-                      if (_formItemPageKey.currentState!.validate()) {
-                        _saveItem(context, TodoItem(title: _controller.text));
+                      if (formItemPageKey.currentState!.validate()) {
+                        _saveItem(context, TodoItem(title: controller.text));
                         Navigator.pop(context);
                       }
                     },
@@ -63,8 +63,8 @@ class ItemPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (_formItemPageKey.currentState!.validate()) {
-              _saveItem(context, TodoItem(title: _controller.text));
+            if (formItemPageKey.currentState!.validate()) {
+              _saveItem(context, TodoItem(title: controller.text));
               Navigator.pop(context);
             }
           },
