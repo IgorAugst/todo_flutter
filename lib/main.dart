@@ -56,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
       _selectedCategory = _todoProvider.categories[index];
+      if(_isSelecting){
+        _clearSelection();
+      }
     });
   }
 
@@ -91,6 +94,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _clearSelection(){
+    setState(() {
+      _selectionProvider.clearSelection();
+      _isSelecting = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
@@ -101,78 +111,94 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectionProvider = selectionProvider;
 
       return PopScope(
-        canPop: _selectedIndex == 0,
+        canPop: _selectedIndex == 0 && !_isSelecting,
         onPopInvokedWithResult: (didPop, result) {
-          _selectDrawer(0);
+          if(!_isSelecting){
+            _selectDrawer(0);
+          }else{
+            _clearSelection();
+          }
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(_selectedCategory.name),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            actions: <Widget>[
-              Visibility(
-                visible: _selectionProvider.length() != 0,
-                child: IconButton(
-                    onPressed: () {
-                      _deleteSelection();
-                    },
-                    icon: const Icon(Icons.delete)),
-              )
-            ],
-          ),
-          drawer: Drawer(
-              child: ListView.builder(
-            itemCount: todoProvider.categoryCount,
-            itemBuilder: (context, index) {
-              return ListTile(
-                tileColor: index == _selectedIndex ? selectedColor : null,
-                title: Text(todoProvider.categories[index].name),
-                onTap: () {
-                  _selectDrawer(index);
-                  Navigator.pop(context);
-                },
-              );
-            },
-          )),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: todoProvider.getTodoItemCount(
-                        category: _selectedCategory),
-                    itemBuilder: (BuildContext context, int index) {
-                      var item = todoProvider.getTodoItems(
-                          category: _selectedCategory)[index];
-
-                      return Material(
-                        color: selectionProvider.checkSelection(item)
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : null,
-                        child: ItemWidget(
-                          item: item,
-                          onToggle: todoProvider.toggleItem,
-                          onTap: (item) {
-                            _openItemTap(context: context, item: item);
-                          },
-                          onLongPress: (item) {
-                            _onItemLongPress(item);
-                          },
-                          showCheckbox: !_isSelecting,
-                        ),
-                      );
-                    }),
+        child: GestureDetector(
+          onTap: () {
+            if(_isSelecting){
+              _clearSelection();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(_selectedCategory.name),
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              actions: <Widget>[
+                AnimatedOpacity(
+                  opacity: _selectionProvider.length() != 0 ? 1 : 0,
+                  duration: Duration(milliseconds: 200),
+                  child: IconButton(
+                      onPressed: () {
+                        _deleteSelection();
+                      },
+                      icon: const Icon(Icons.delete)),
+                )
               ],
             ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                _openItemTap(context: context);
+            drawer: Drawer(
+                child: ListView.builder(
+              itemCount: todoProvider.categoryCount,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  tileColor: index == _selectedIndex ? selectedColor : null,
+                  title: Text(todoProvider.categories[index].name),
+                  onTap: () {
+                    _selectDrawer(index);
+                    Navigator.pop(context);
+                  },
+                );
               },
-              tooltip: 'Adicionar',
-              child: Icon(Icons.add)),
+            )),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: todoProvider.getTodoItemCount(
+                          category: _selectedCategory),
+                      itemBuilder: (BuildContext context, int index) {
+                        var item = todoProvider.getTodoItems(
+                            category: _selectedCategory)[index];
+
+                        return Material(
+                          color: selectionProvider.checkSelection(item)
+                              ? Theme.of(context).colorScheme.secondaryContainer
+                              : null,
+                          child: ItemWidget(
+                            item: item,
+                            onToggle: todoProvider.toggleItem,
+                            onTap: (item) {
+                              _openItemTap(context: context, item: item);
+                            },
+                            onLongPress: (item) {
+                              _onItemLongPress(item);
+                            },
+                            showCheckbox: !_isSelecting,
+                          ),
+                        );
+                      }),
+                ],
+              ),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            floatingActionButton: AnimatedOpacity(
+              opacity: _isSelecting ? 0 : 1,
+              duration: Duration(milliseconds: 200),
+              child: FloatingActionButton(
+                  onPressed: _isSelecting ? null : () {
+                    _openItemTap(context: context);
+                  },
+                  tooltip: 'Adicionar',
+                  child: Icon(Icons.add)),
+            ),
+          ),
         ),
       );
     });
