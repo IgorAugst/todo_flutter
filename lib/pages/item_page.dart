@@ -57,6 +57,14 @@ class ItemPage extends StatelessWidget {
                         Navigator.pop(context);
                       }
                     },
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      ElevatedButton(onPressed: () {}, child: Text('Data')),
+                      SizedBox(width: 8,),
+                      ElevatedButton(onPressed: () {}, child: Text('hora'))
+                    ],
                   )
                 ],
               )),

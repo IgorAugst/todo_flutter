@@ -160,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             )),
-            drawerEdgeDragWidth: MediaQuery.of(context).size.width,
+            drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
               child: Column(
                 children: [

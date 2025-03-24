@@ -1,0 +1,2 @@
+D:/igora/Documentos/Code/todo_flutter/android/app/.cxx/RelWithDebInfo/v3s4gc5q/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/igora/Documentos/Code/todo_flutter/android/app/.cxx/RelWithDebInfo/v3s4gc5q/arm64-v8a/CMakeFiles/rebuild_cache.dir
