@@ -3,17 +3,37 @@ import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 
-class ItemPage extends StatelessWidget {
+class ItemPage extends StatefulWidget {
   final String title;
   final TodoItem? item;
 
   const ItemPage({super.key, required this.title, this.item});
 
+  @override
+  State<ItemPage> createState() => _ItemPageState();
+}
+
+class _ItemPageState extends State<ItemPage> {
+  late TextEditingController _controller;
+  final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.item?.title);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _saveItem(BuildContext context, TodoItem newItem) {
     var todoProvider = Provider.of<TodoProvider>(context, listen: false);
 
-    if (item != null) {
-      todoProvider.updateItem(item!, newItem);
+    if (widget.item != null) {
+      todoProvider.updateItem(widget.item!, newItem);
     } else {
       todoProvider.addItem(newItem);
     }
@@ -21,24 +41,20 @@ class ItemPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController controller =
-        TextEditingController(text: item?.title);
-    final formItemPageKey = GlobalKey<FormState>();
-
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(widget.title),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
-              key: formItemPageKey,
+              key: _formItemPageKey,
               child: Column(
                 children: [
                   TextFormField(
-                    controller: controller,
+                    controller: _controller,
                     autofocus: true,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -52,8 +68,8 @@ class ItemPage extends StatelessWidget {
                       return null;
                     },
                     onFieldSubmitted: (value) {
-                      if (formItemPageKey.currentState!.validate()) {
-                        _saveItem(context, TodoItem(title: controller.text));
+                      if (_formItemPageKey.currentState!.validate()) {
+                        _saveItem(context, TodoItem(title: _controller.text));
                         Navigator.pop(context);
                       }
                     },
@@ -71,8 +87,8 @@ class ItemPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (formItemPageKey.currentState!.validate()) {
-              _saveItem(context, TodoItem(title: controller.text));
+            if (_formItemPageKey.currentState!.validate()) {
+              _saveItem(context, TodoItem(title: _controller.text));
               Navigator.pop(context);
             }
           },
