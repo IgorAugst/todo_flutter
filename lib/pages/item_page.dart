@@ -16,6 +16,7 @@ class ItemPage extends StatefulWidget {
 class _ItemPageState extends State<ItemPage> {
   late TextEditingController _controller;
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -77,8 +78,18 @@ class _ItemPageState extends State<ItemPage> {
                   SizedBox(height: 20),
                   Row(
                     children: [
-                      ElevatedButton(onPressed: () {}, child: Text('Data')),
-                      SizedBox(width: 8,),
+                      ElevatedButton(
+                          onPressed: () async {
+                            var pickedDate = await showDatePicker(
+                                context: context,
+                                initialEntryMode: DatePickerEntryMode.calendarOnly,
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime(2030));
+                          },
+                          child: Text('Data')),
+                      SizedBox(
+                        width: 8,
+                      ),
                       ElevatedButton(onPressed: () {}, child: Text('hora'))
                     ],
                   )
