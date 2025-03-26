@@ -7,6 +7,7 @@ import 'package:todo_flutter/widgets/item_widget.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 import 'package:flutter/foundation.dart' as Foundation;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(
@@ -34,7 +35,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(),
-      //home: const ItemPage()
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: [
+        const Locale('pt')
+      ],
     );
   }
 }

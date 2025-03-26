@@ -1,0 +1,2 @@
+D:/igora/Documentos/Code/todo_flutter/android/app/.cxx/Debug/72574s60/x86_64/CMakeFiles/edit_cache.dir
+D:/igora/Documentos/Code/todo_flutter/android/app/.cxx/Debug/72574s60/x86_64/CMakeFiles/rebuild_cache.dir
