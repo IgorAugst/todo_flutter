@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
+import 'package:intl/intl.dart';
 
 class ItemPage extends StatefulWidget {
   final String title;
@@ -16,7 +17,7 @@ class ItemPage extends StatefulWidget {
 class _ItemPageState extends State<ItemPage> {
   late TextEditingController _controller;
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -42,6 +43,14 @@ class _ItemPageState extends State<ItemPage> {
 
   @override
   Widget build(BuildContext context) {
+    String dateText;
+
+    if(selectedDate == null){
+      dateText = 'Data';
+    }else{
+      dateText = DateFormat('dd/MM/yyyy').format(selectedDate!);
+    }
+
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
         appBar: AppBar(
@@ -82,11 +91,16 @@ class _ItemPageState extends State<ItemPage> {
                           onPressed: () async {
                             var pickedDate = await showDatePicker(
                                 context: context,
-                                initialEntryMode: DatePickerEntryMode.calendarOnly,
+                                initialEntryMode:
+                                    DatePickerEntryMode.calendarOnly,
                                 firstDate: DateTime(2020),
                                 lastDate: DateTime(2030));
+
+                            setState(() {
+                              selectedDate = pickedDate;
+                            });
                           },
-                          child: Text('Data')),
+                          child: Text(dateText)),
                       SizedBox(
                         width: 8,
                       ),
