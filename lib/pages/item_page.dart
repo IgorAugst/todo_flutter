@@ -18,6 +18,7 @@ class _ItemPageState extends State<ItemPage> {
   late TextEditingController _controller;
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
   DateTime? selectedDate;
+  TimeOfDay? selectedTime;
 
   @override
   void initState() {
@@ -43,13 +44,12 @@ class _ItemPageState extends State<ItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    String dateText;
+    String dateText = selectedDate == null
+        ? 'Data'
+        : DateFormat('dd/MM/yyyy').format(selectedDate!);
 
-    if(selectedDate == null){
-      dateText = 'Data';
-    }else{
-      dateText = DateFormat('dd/MM/yyyy').format(selectedDate!);
-    }
+    String timeText =
+        selectedTime == null ? 'Hora' : selectedTime!.format(context);
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
@@ -104,7 +104,19 @@ class _ItemPageState extends State<ItemPage> {
                       SizedBox(
                         width: 8,
                       ),
-                      ElevatedButton(onPressed: () {}, child: Text('hora'))
+                      ElevatedButton(
+                        onPressed: () async {
+                          var pickedTime = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                              initialEntryMode: TimePickerEntryMode.dial);
+
+                          setState(() {
+                            selectedTime = pickedTime;
+                          });
+                        },
+                        child: Text(timeText),
+                      )
                     ],
                   )
                 ],
