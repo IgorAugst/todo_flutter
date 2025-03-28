@@ -7,8 +7,9 @@ import 'package:intl/intl.dart';
 class ItemPage extends StatefulWidget {
   final String title;
   final TodoItem? item;
+  final Function(TodoItem) onSubmit;
 
-  const ItemPage({super.key, required this.title, this.item});
+  const ItemPage({super.key, required this.title, required this.onSubmit, this.item});
 
   @override
   State<ItemPage> createState() => _ItemPageState();
@@ -40,14 +41,29 @@ class _ItemPageState extends State<ItemPage> {
     super.dispose();
   }
 
-  void _saveItem(BuildContext context, TodoItem newItem) {
-    var todoProvider = Provider.of<TodoProvider>(context, listen: false);
+  DateTime _combineDateTimeAndTimeOfDay(DateTime date, TimeOfDay time) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+  }
 
-    if (widget.item != null) {
-      todoProvider.updateItem(widget.item!, newItem);
-    } else {
-      todoProvider.addItem(newItem);
+  void _saveItem() {
+    var fullDateTime = selectedDate;
+
+    if(selectedDate != null && selectedTime != null) {
+      fullDateTime = _combineDateTimeAndTimeOfDay(
+          selectedDate!, selectedTime!);
     }
+
+    var newItem = TodoItem(
+      title: _controller.text,
+      dateTime: fullDateTime,
+      allDay: selectedTime == null && selectedDate != null
+    );
   }
 
   @override
@@ -87,7 +103,7 @@ class _ItemPageState extends State<ItemPage> {
                     },
                     onFieldSubmitted: (value) {
                       if (_formItemPageKey.currentState!.validate()) {
-                        _saveItem(context, TodoItem(title: _controller.text));
+                        _saveItem();
                         Navigator.pop(context);
                       }
                     },
@@ -133,7 +149,7 @@ class _ItemPageState extends State<ItemPage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             if (_formItemPageKey.currentState!.validate()) {
-              _saveItem(context, TodoItem(title: _controller.text));
+              _saveItem();
               Navigator.pop(context);
             }
           },

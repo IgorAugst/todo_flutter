@@ -75,7 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) =>
                   ItemPage(
                       title: item == null ? "Adicionar" : "Editar",
-                      item: item))).then((_) {
+                      item: item,
+                      onSubmit: (newItem) {},
+                  ))).then((_) {
         _selectDrawer(0);
       });
     }else{
