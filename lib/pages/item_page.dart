@@ -24,6 +24,14 @@ class _ItemPageState extends State<ItemPage> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.item?.title);
+
+    if(widget.item != null){
+      selectedDate = widget.item?.dateTime;
+
+      if(selectedDate != null && !widget.item!.allDay){
+        selectedTime = TimeOfDay.fromDateTime(selectedDate!);
+      }
+    }
   }
 
   @override

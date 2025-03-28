@@ -2,8 +2,9 @@ class TodoItem implements Comparable{
   String title;
   bool isDone = false;
   DateTime? dateTime;
+  bool allDay = false;
 
-  TodoItem({required this.title, this.dateTime});
+  TodoItem({required this.title, this.dateTime, this.allDay = false});
 
   void toggleDone(){
     isDone = !isDone;
@@ -13,6 +14,7 @@ class TodoItem implements Comparable{
     title = item.title;
     isDone = item.isDone;
     dateTime = item.dateTime;
+    allDay = item.allDay;
   }
 
   @override
