@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class TodoItem implements Comparable{
   String title;
   bool isDone = false;
@@ -15,6 +17,18 @@ class TodoItem implements Comparable{
     isDone = item.isDone;
     dateTime = item.dateTime;
     allDay = item.allDay;
+  }
+
+  String dateTimeText(){
+    if(dateTime == null){
+      return 'Horário';
+    }
+
+    if(allDay){
+      return DateFormat('dd/MM/yyyy').format(dateTime!);
+    }else{
+      return DateFormat('dd/MM/yyyy hh:mm').format(dateTime!);
+    }
   }
 
   @override

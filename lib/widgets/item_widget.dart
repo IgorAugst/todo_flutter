@@ -47,16 +47,39 @@ class _ItemWidgetState extends State<ItemWidget> {
                       }
                     : null),
           ),
-          RichText(
-              text: TextSpan(
-            text: widget.item.title,
-            style: TextStyle(
-              decoration:
-                  widget.item.isDone ? TextDecoration.lineThrough : null,
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: MediaQuery.textScalerOf(context).scale(18)
-            ),
-          ))
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                  text: TextSpan(
+                text: widget.item.title,
+                style: TextStyle(
+                  decoration:
+                      widget.item.isDone ? TextDecoration.lineThrough : null,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: MediaQuery.textScalerOf(context).scale(17),
+                  fontWeight: FontWeight.w500
+                ),
+              )),
+              if(widget.item.dateTime != null)
+                RichText(
+                  text: TextSpan(text: widget.item.dateTimeText(),
+                      style: TextStyle(
+                          decoration: widget.item.isDone ? TextDecoration
+                              .lineThrough : null,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .onSurface,
+                          fontSize: MediaQuery.textScalerOf(context).scale(12),
+                          fontWeight: FontWeight.w400
+                      )
+                  ),
+
+                )
+
+            ],
+          )
         ],
       ),
     );
