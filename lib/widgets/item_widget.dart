@@ -51,9 +51,11 @@ class _ItemWidgetState extends State<ItemWidget> {
               text: TextSpan(
             text: widget.item.title,
             style: TextStyle(
-                decoration:
-                    widget.item.isDone ? TextDecoration.lineThrough : null,
-                color: Theme.of(context).colorScheme.onSurface),
+              decoration:
+                  widget.item.isDone ? TextDecoration.lineThrough : null,
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: MediaQuery.textScalerOf(context).scale(18)
+            ),
           ))
         ],
       ),
