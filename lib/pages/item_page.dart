@@ -75,7 +75,7 @@ class _ItemPageState extends State<ItemPage> {
         : DateFormat('dd/MM/yyyy').format(selectedDate!);
 
     String timeText =
-        selectedTime == null ? 'Hora' : selectedTime!.format(context);
+        selectedTime == null || selectedDate == null ? 'Hora' : selectedTime!.format(context);
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
@@ -131,7 +131,7 @@ class _ItemPageState extends State<ItemPage> {
                         width: 8,
                       ),
                       ElevatedButton(
-                        onPressed: () async {
+                        onPressed: selectedDate != null ? () async {
                           var pickedTime = await showTimePicker(
                               context: context,
                               initialTime: TimeOfDay.now(),
@@ -140,7 +140,7 @@ class _ItemPageState extends State<ItemPage> {
                           setState(() {
                             selectedTime = pickedTime;
                           });
-                        },
+                        } : null,
                         child: Text(timeText),
                       )
                     ],
