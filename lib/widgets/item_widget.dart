@@ -8,7 +8,13 @@ class ItemWidget extends StatefulWidget {
   final Function(TodoItem)? onLongPress;
   final bool showCheckbox;
 
-  const ItemWidget({super.key, required this.item, required this.onToggle, this.onTap, this.onLongPress, this.showCheckbox=true});
+  const ItemWidget(
+      {super.key,
+      required this.item,
+      required this.onToggle,
+      this.onTap,
+      this.onLongPress,
+      this.showCheckbox = true});
 
   @override
   State<ItemWidget> createState() => _ItemWidgetState();
@@ -17,37 +23,40 @@ class ItemWidget extends StatefulWidget {
 class _ItemWidgetState extends State<ItemWidget> {
   @override
   Widget build(BuildContext context) {
-      return InkWell(
-        onTap: () {
-          if (widget.onTap != null) {
-            widget.onTap!(widget.item);
-          }
-        },
-        onLongPress: () {
-          if (widget.onLongPress != null) {
-            widget.onLongPress!(widget.item);
-          }
-        },
-        child: Row(
-          children: [
-            AnimatedOpacity(
-              opacity: widget.showCheckbox ? 1 : 0,
-              duration: Duration(milliseconds: 200),
-              child: Checkbox(
-                  value: widget.item.isDone,
-                  onChanged: widget.showCheckbox ? (bool? value) {
-                    widget.onToggle(widget.item);
-                  } : null),
-            ),
-            RichText(
-                text: TextSpan(
-              text: widget.item.title,
-              style: TextStyle(
-                  decoration: widget.item.isDone ? TextDecoration.lineThrough : null,
-                  color: Theme.of(context).colorScheme.onSurface),
-            ))
-          ],
-        ),
-      );
+    return InkWell(
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!(widget.item);
+        }
+      },
+      onLongPress: () {
+        if (widget.onLongPress != null) {
+          widget.onLongPress!(widget.item);
+        }
+      },
+      child: Row(
+        children: [
+          AnimatedOpacity(
+            opacity: widget.showCheckbox ? 1 : 0,
+            duration: Duration(milliseconds: 200),
+            child: Checkbox(
+                value: widget.item.isDone,
+                onChanged: widget.showCheckbox
+                    ? (bool? value) {
+                        widget.onToggle(widget.item);
+                      }
+                    : null),
+          ),
+          RichText(
+              text: TextSpan(
+            text: widget.item.title,
+            style: TextStyle(
+                decoration:
+                    widget.item.isDone ? TextDecoration.lineThrough : null,
+                color: Theme.of(context).colorScheme.onSurface),
+          ))
+        ],
+      ),
+    );
   }
 }
