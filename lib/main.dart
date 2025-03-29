@@ -76,7 +76,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ItemPage(
                       title: item == null ? "Adicionar" : "Editar",
                       item: item,
-                      onSubmit: (newItem) {},
+                      onSubmit: (newItem) {
+                        if(item == null) {
+                          _todoProvider.addItem(newItem);
+                        }else{
+                          _todoProvider.updateItem(item, newItem);
+                        }
+                      },
                   ))).then((_) {
         _selectDrawer(0);
       });

@@ -64,6 +64,8 @@ class _ItemPageState extends State<ItemPage> {
       dateTime: fullDateTime,
       allDay: selectedTime == null && selectedDate != null
     );
+
+    widget.onSubmit(newItem);
   }
 
   @override
