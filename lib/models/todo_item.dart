@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class TodoItem implements Comparable{
+class TodoItem implements Comparable {
   String title;
   bool isDone = false;
   DateTime? dateTime;
@@ -8,47 +8,54 @@ class TodoItem implements Comparable{
 
   TodoItem({required this.title, this.dateTime, this.allDay = false});
 
-  void toggleDone(){
+  void toggleDone() {
     isDone = !isDone;
   }
 
-  void updateFrom(TodoItem item){
+  void updateFrom(TodoItem item) {
     title = item.title;
     isDone = item.isDone;
     dateTime = item.dateTime;
     allDay = item.allDay;
   }
 
-  String dateTimeText(){
-    if(dateTime == null){
+  String dateTimeText() {
+    if (dateTime == null) {
       return 'Horário';
     }
 
-    if(allDay){
+    if (allDay) {
       return DateFormat('dd/MM/yyyy').format(dateTime!);
-    }else{
+    } else {
       return DateFormat('dd/MM/yyyy hh:mm').format(dateTime!);
     }
   }
 
   @override
   int compareTo(other) {
-    if(isDone && !other.isDone){
+    if (isDone && !other.isDone) {
       return 1;
-    }else if(!isDone && other.isDone){
+    } else if (!isDone && other.isDone) {
       return -1;
-    }else{
-      return title.toLowerCase().compareTo(other.title.toString().toLowerCase());
+    } else {
+      return title
+          .toLowerCase()
+          .compareTo(other.title.toString().toLowerCase());
     }
   }
 
-  Map<String, Object?> toMap(){
+  Map<String, Object?> toMap() {
     String? dateTimeISO;
 
     if (dateTime != null) {
       dateTimeISO = DateFormat('yyyy-MM-dd hh:mm:ss').format(dateTime!);
     }
 
-    return {'title': title, 'isDone': isDone, 'dateTime': dateTimeISO, 'allDay': allDay};
+    return {
+      'title': title,
+      'isDone': isDone,
+      'dateTime': dateTimeISO,
+      'allDay': allDay
+    };
   }
 }
