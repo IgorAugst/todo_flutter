@@ -6,7 +6,16 @@ class TodoItem implements Comparable {
   DateTime? dateTime;
   bool allDay = false;
 
-  TodoItem({required this.title, this.dateTime, this.allDay = false});
+  TodoItem({required this.title, this.dateTime, this.isDone = false, this.allDay = false});
+
+  factory TodoItem.fromMap(Map<String, Object?> map){
+    return TodoItem(
+      title: map['title'].toString(),
+      isDone: map['isDone'] == 1 ? true : false,
+      dateTime: DateTime.tryParse(map['dateTime'].toString()),
+      allDay: map['allDay'] == 1 ? true : false
+    );
+  }
 
   void toggleDone() {
     isDone = !isDone;
@@ -27,7 +36,7 @@ class TodoItem implements Comparable {
     if (allDay) {
       return DateFormat('dd/MM/yyyy').format(dateTime!);
     } else {
-      return DateFormat('dd/MM/yyyy hh:mm').format(dateTime!);
+      return DateFormat('dd/MM/yyyy HH:mm').format(dateTime!);
     }
   }
 
@@ -48,7 +57,7 @@ class TodoItem implements Comparable {
     String? dateTimeISO;
 
     if (dateTime != null) {
-      dateTimeISO = DateFormat('yyyy-MM-dd hh:mm:ss').format(dateTime!);
+      dateTimeISO = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime!);
     }
 
     return {

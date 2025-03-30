@@ -6,12 +6,12 @@ import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 
 class TodoProvider extends ChangeNotifier {
   final List<Category> _categories = [];
-  final List<TodoItem> _items = [];
+  List<TodoItem> _items = [];
   final TodoRepository todoRepository = TodoRepositorySqlite();
 
   TodoProvider() {
-    _addInitialItems();
     _addDefaultCategories();
+    loadItems();
   }
 
   void _addDefaultCategories() {
@@ -46,6 +46,14 @@ class TodoProvider extends ChangeNotifier {
 
   int get categoryCount => _categories.length;
   List<Category> get categories => List.unmodifiable(_categories);
+
+  Future<List<TodoItem>> loadItems() async {
+    _items = await todoRepository.getTodos();
+    _items.sort();
+    notifyListeners();
+
+    return _items;
+  }
 
   Future<void> addItem(TodoItem item) async {
     await todoRepository.addTodo(item);

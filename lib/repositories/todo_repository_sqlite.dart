@@ -19,9 +19,16 @@ class TodoRepositorySqlite implements TodoRepository {
   }
 
   @override
-  Future<List<TodoItem>> getTodos() {
-    // TODO: implement getTodos
-    throw UnimplementedError();
+  Future<List<TodoItem>> getTodos() async {
+    final db = await AppDatabase.getDatabase();
+
+    final List<Map<String, Object?>> todoMaps = await db.query('todos');
+
+    return [
+      for (final item in todoMaps)
+        TodoItem.fromMap(item)
+    ];
+
   }
 
   @override
