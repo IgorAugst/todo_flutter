@@ -41,4 +41,14 @@ class TodoItem implements Comparable{
       return title.toLowerCase().compareTo(other.title.toString().toLowerCase());
     }
   }
+
+  Map<String, Object?> toMap(){
+    String? dateTimeISO;
+
+    if (dateTime != null) {
+      dateTimeISO = DateFormat('yyyy-MM-dd hh:mm:ss').format(dateTime!);
+    }
+
+    return {'title': title, 'isDone': isDone, 'dateTime': dateTimeISO, 'allDay': allDay};
+  }
 }
