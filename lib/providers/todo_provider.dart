@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
+import 'package:todo_flutter/repositories/todo_repository.dart';
+import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 
 class TodoProvider extends ChangeNotifier {
   final List<Category> _categories = [];
   final List<TodoItem> _items = [];
+  final TodoRepository todoRepository = TodoRepositorySqlite();
 
   TodoProvider() {
     _addInitialItems();
@@ -32,10 +35,10 @@ class TodoProvider extends ChangeNotifier {
     return getTodoItems(category: category).length;
   }
 
-  void _addInitialItems() {
-    addItem(TodoItem(title: 'Item 1'));
-    addItem(TodoItem(title: 'Item 2'));
-    addItem(TodoItem(title: 'Item 3'));
+  Future<void> _addInitialItems() async {
+    await addItem(TodoItem(title: 'Item 1'));
+    await addItem(TodoItem(title: 'Item 2'));
+    await addItem(TodoItem(title: 'Item 3'));
   }
 
   int get itemCount => _items.length;
@@ -44,7 +47,8 @@ class TodoProvider extends ChangeNotifier {
   int get categoryCount => _categories.length;
   List<Category> get categories => List.unmodifiable(_categories);
 
-  void addItem(TodoItem item) {
+  Future<void> addItem(TodoItem item) async {
+    await todoRepository.addTodo(item);
     _items.add(item);
     _sortItems();
     notifyListeners();

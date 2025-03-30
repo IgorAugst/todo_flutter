@@ -53,9 +53,9 @@ class TodoItem implements Comparable {
 
     return {
       'title': title,
-      'isDone': isDone,
+      'isDone': isDone ? 1 : 0,
       'dateTime': dateTimeISO,
-      'allDay': allDay
+      'allDay': allDay ? 1 : 0,
     };
   }
 }
