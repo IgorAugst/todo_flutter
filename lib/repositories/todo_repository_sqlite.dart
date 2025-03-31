@@ -8,8 +8,10 @@ class TodoRepositorySqlite implements TodoRepository {
   Future<void> addTodo(TodoItem item) async {
     final db = await AppDatabase.getDatabase();
 
-    await db.insert('todos', item.toMap(),
+    int id = await db.insert('todos', item.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+
+    item.id = id;
   }
 
   @override

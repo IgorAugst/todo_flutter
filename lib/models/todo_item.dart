@@ -1,15 +1,17 @@
 import 'package:intl/intl.dart';
 
 class TodoItem implements Comparable {
+  int? id;
   String title;
   bool isDone = false;
   DateTime? dateTime;
   bool allDay = false;
 
-  TodoItem({required this.title, this.dateTime, this.isDone = false, this.allDay = false});
+  TodoItem({this.id, required this.title, this.dateTime, this.isDone = false, this.allDay = false});
 
   factory TodoItem.fromMap(Map<String, Object?> map){
     return TodoItem(
+      id: int.tryParse(map['id'].toString()),
       title: map['title'].toString(),
       isDone: map['isDone'] == 1 ? true : false,
       dateTime: DateTime.tryParse(map['dateTime'].toString()),
@@ -61,6 +63,7 @@ class TodoItem implements Comparable {
     }
 
     return {
+      'id': id,
       'title': title,
       'isDone': isDone ? 1 : 0,
       'dateTime': dateTimeISO,
