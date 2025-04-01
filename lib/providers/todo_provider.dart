@@ -15,9 +15,9 @@ class TodoProvider extends ChangeNotifier {
   }
 
   void _addDefaultCategories() {
-    _categories.add(Category(name: 'All', isDone: null));
-    _categories.add(Category(name: 'Done', isDone: true));
-    _categories.add(Category(name: 'Not Done', isDone: false));
+    _categories.add(Category(name: 'Todos', isDone: null));
+    _categories.add(Category(name: 'Completos', isDone: true));
+    _categories.add(Category(name: 'Incompletos', isDone: false));
   }
 
   void _sortItems() {
