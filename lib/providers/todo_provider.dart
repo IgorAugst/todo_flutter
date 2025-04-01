@@ -35,12 +35,6 @@ class TodoProvider extends ChangeNotifier {
     return getTodoItems(category: category).length;
   }
 
-  Future<void> _addInitialItems() async {
-    await addItem(TodoItem(title: 'Item 1'));
-    await addItem(TodoItem(title: 'Item 2'));
-    await addItem(TodoItem(title: 'Item 3'));
-  }
-
   int get itemCount => _items.length;
   List<TodoItem> get items => List.unmodifiable(_items);
 
@@ -62,13 +56,15 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(TodoItem item) {
+  Future<void> removeItem(TodoItem item) async {
+    await todoRepository.deleteTodo(item.id!);
     _items.remove(item);
     notifyListeners();
   }
 
-  void toggleItem(TodoItem item) {
+  Future<void> toggleItem(TodoItem item) async {
     item.toggleDone();
+    await todoRepository.updateTodo(item);
     _sortItems();
     notifyListeners();
   }

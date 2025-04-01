@@ -15,9 +15,10 @@ class TodoRepositorySqlite implements TodoRepository {
   }
 
   @override
-  Future<void> deleteTodo(int id) {
-    // TODO: implement deleteTodo
-    throw UnimplementedError();
+  Future<void> deleteTodo(int id) async {
+    final db = await AppDatabase.getDatabase();
+
+    await db.delete('todos', where: 'id = ?', whereArgs: [id]);
   }
 
   @override
@@ -26,22 +27,14 @@ class TodoRepositorySqlite implements TodoRepository {
 
     final List<Map<String, Object?>> todoMaps = await db.query('todos');
 
-    return [
-      for (final item in todoMaps)
-        TodoItem.fromMap(item)
-    ];
-
+    return [for (final item in todoMaps) TodoItem.fromMap(item)];
   }
 
   @override
   Future<void> updateTodo(TodoItem item) async {
     final db = await AppDatabase.getDatabase();
 
-    await db.update(
-      'todos',
-      item.toMap(),
-      where: 'id = ?',
-      whereArgs: [item.id]
-    );
+    await db
+        .update('todos', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
   }
 }
