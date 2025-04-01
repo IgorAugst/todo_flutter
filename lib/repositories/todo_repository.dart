@@ -4,5 +4,5 @@ abstract interface class TodoRepository{
   Future<void> addTodo(TodoItem item);
   Future<List<TodoItem>> getTodos();
   Future<void> deleteTodo(int id);
-  Future<void> updateTodo(int id, TodoItem item);
+  Future<void> updateTodo(TodoItem item);
 }

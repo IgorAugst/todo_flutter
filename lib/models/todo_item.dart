@@ -7,27 +7,33 @@ class TodoItem implements Comparable {
   DateTime? dateTime;
   bool allDay = false;
 
-  TodoItem({this.id, required this.title, this.dateTime, this.isDone = false, this.allDay = false});
+  TodoItem(
+      {this.id,
+      required this.title,
+      this.dateTime,
+      this.isDone = false,
+      this.allDay = false});
 
-  factory TodoItem.fromMap(Map<String, Object?> map){
+  factory TodoItem.fromMap(Map<String, Object?> map) {
     return TodoItem(
-      id: int.tryParse(map['id'].toString()),
-      title: map['title'].toString(),
-      isDone: map['isDone'] == 1 ? true : false,
-      dateTime: DateTime.tryParse(map['dateTime'].toString()),
-      allDay: map['allDay'] == 1 ? true : false
-    );
+        id: int.tryParse(map['id'].toString()),
+        title: map['title'].toString(),
+        isDone: map['isDone'] == 1 ? true : false,
+        dateTime: DateTime.tryParse(map['dateTime'].toString()),
+        allDay: map['allDay'] == 1 ? true : false);
   }
 
   void toggleDone() {
     isDone = !isDone;
   }
 
-  void updateFrom(TodoItem item) {
+  TodoItem updateFrom(TodoItem item) {
     title = item.title;
     isDone = item.isDone;
     dateTime = item.dateTime;
     allDay = item.allDay;
+
+    return this;
   }
 
   String dateTimeText() {
@@ -69,5 +75,10 @@ class TodoItem implements Comparable {
       'dateTime': dateTimeISO,
       'allDay': allDay ? 1 : 0,
     };
+  }
+
+  @override
+  String toString() {
+    return 'TodoItem{id: $id, title: $title, isDone: $isDone, dateTime: $dateTime, allDay: $allDay}';
   }
 }

@@ -25,10 +25,10 @@ class TodoProvider extends ChangeNotifier {
   }
 
   List<TodoItem> getTodoItems({Category category = const Category()}) {
-    if (category.isDone == null){
+    if (category.isDone == null) {
       return _items;
     }
-      return _items.where((item) => item.isDone == category.isDone).toList();
+    return _items.where((item) => item.isDone == category.isDone).toList();
   }
 
   int getTodoItemCount({Category category = const Category()}) {
@@ -73,8 +73,8 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateItem(TodoItem oldItem, TodoItem newItem){
-    oldItem.updateFrom(newItem);
+  Future<void> updateItem(TodoItem updatedItem) async {
+    await todoRepository.updateTodo(updatedItem);
     _sortItems();
     notifyListeners();
   }

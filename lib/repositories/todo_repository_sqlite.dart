@@ -34,8 +34,14 @@ class TodoRepositorySqlite implements TodoRepository {
   }
 
   @override
-  Future<void> updateTodo(int id, TodoItem item) {
-    // TODO: implement updateTodo
-    throw UnimplementedError();
+  Future<void> updateTodo(TodoItem item) async {
+    final db = await AppDatabase.getDatabase();
+
+    await db.update(
+      'todos',
+      item.toMap(),
+      where: 'id = ?',
+      whereArgs: [item.id]
+    );
   }
 }

@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         if(item == null) {
                           _todoProvider.addItem(newItem);
                         }else{
-                          _todoProvider.updateItem(item, newItem);
+                          _todoProvider.updateItem(item.updateFrom(newItem));
                         }
                       },
                   ))).then((_) {

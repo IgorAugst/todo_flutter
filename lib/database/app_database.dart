@@ -1,5 +1,5 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
   static Database? _database;
@@ -16,7 +16,6 @@ class AppDatabase {
     final path = join(dbPath, 'todo.db');
 
     return await openDatabase(path, onCreate: (db, version) {
-      print('######## criando banco');
       return db.execute('CREATE TABLE todos('
           'id INTEGER PRIMARY KEY,'
           'title TEXT NOT NULL,'
@@ -24,7 +23,6 @@ class AppDatabase {
           'dateTime TEXT,'
           'allDay INTEGER DEFAULT 0'
           ')');
-    },
-    version: 1);
+    }, version: 1);
   }
 }
