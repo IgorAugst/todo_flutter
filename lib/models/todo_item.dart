@@ -48,17 +48,49 @@ class TodoItem implements Comparable {
     }
   }
 
-  @override
-  int compareTo(other) {
-    if (isDone && !other.isDone) {
+  int _compareTime(DateTime? a, DateTime? b) {
+    if (a != null && b != null) {
+      return a.compareTo(b);
+    } else if (a == null && b != null) {
       return 1;
-    } else if (!isDone && other.isDone) {
+    } else if (a != null && b == null) {
       return -1;
     } else {
-      return title
-          .toLowerCase()
-          .compareTo(other.title.toString().toLowerCase());
+      return 0;
     }
+  }
+
+  int _compareText(String a, String b) {
+    return a.compareTo(b);
+  }
+
+  int _compareBool(bool a, bool b) {
+    if (a && !b) {
+      return 1;
+    } else if (!a && b) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
+
+  @override
+  int compareTo(other) {
+    var comparator = [
+      () => _compareBool(isDone, other.isDone),
+      () => _compareTime(dateTime, other.dateTime),
+      () => _compareText(title, other.title)
+    ];
+
+    return _compareMultiple(comparator);
+  }
+
+  int _compareMultiple(List<int Function()> comparisons) {
+    for (var compare in comparisons) {
+      final result = compare();
+      if (result != 0) return result;
+    }
+    return 0;
   }
 
   Map<String, Object?> toMap() {
