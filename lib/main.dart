@@ -1,15 +1,19 @@
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/category.dart';
+import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/pages/item_page.dart';
 import 'package:todo_flutter/providers/selection_provider.dart';
-import 'package:todo_flutter/widgets/item_widget.dart';
-import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
-import 'package:flutter/foundation.dart' as Foundation;
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:todo_flutter/repositories/notification_repository.dart';
+import 'package:todo_flutter/widgets/item_widget.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationRepository.initNotifications();
+
   runApp(
     MultiProvider(
       providers: [
@@ -31,14 +35,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: Foundation.kDebugMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green, brightness: Brightness.dark),
         useMaterial3: true,
       ),
       home: const MyHomePage(),
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      supportedLocales: [
-        const Locale('pt')
-      ],
+      supportedLocales: [const Locale('pt')],
     );
   }
 }
@@ -61,32 +64,31 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
       _selectedCategory = _todoProvider.categories[index];
-      if(_isSelecting){
+      if (_isSelecting) {
         _clearSelection();
       }
     });
   }
 
   void _openItemTap({required BuildContext context, TodoItem? item}) {
-    if(!_isSelecting || item == null) {
+    if (!_isSelecting || item == null) {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  ItemPage(
-                      title: item == null ? "Adicionar" : "Editar",
-                      item: item,
-                      onSubmit: (newItem) {
-                        if(item == null) {
-                          _todoProvider.addItem(newItem);
-                        }else{
-                          _todoProvider.updateItem(item.updateFrom(newItem));
-                        }
-                      },
+              builder: (context) => ItemPage(
+                    title: item == null ? "Adicionar" : "Editar",
+                    item: item,
+                    onSubmit: (newItem) {
+                      if (item == null) {
+                        _todoProvider.addItem(newItem);
+                      } else {
+                        _todoProvider.updateItem(item.updateFrom(newItem));
+                      }
+                    },
                   ))).then((_) {
         _selectDrawer(0);
       });
-    }else{
+    } else {
       _onItemLongPress(item);
     }
   }
@@ -107,11 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _deleteItem(TodoItem item){
+  void _deleteItem(TodoItem item) {
     _todoProvider.removeItem(item);
   }
 
-  void _clearSelection(){
+  void _clearSelection() {
     setState(() {
       _selectionProvider.clearSelection();
       _isSelecting = false;
@@ -130,15 +132,15 @@ class _MyHomePageState extends State<MyHomePage> {
       return PopScope(
         canPop: _selectedIndex == 0 && !_isSelecting,
         onPopInvokedWithResult: (didPop, result) {
-          if(!_isSelecting){
+          if (!_isSelecting) {
             _selectDrawer(0);
-          }else{
+          } else {
             _clearSelection();
           }
         },
         child: GestureDetector(
           onTap: () {
-            if(_isSelecting){
+            if (_isSelecting) {
               _clearSelection();
             }
           },
@@ -186,16 +188,16 @@ class _MyHomePageState extends State<MyHomePage> {
                             category: _selectedCategory)[index];
 
                         return Dismissible(
-                          background: Container(
-                            color: Colors.red
-                          ),
+                          background: Container(color: Colors.red),
                           key: ValueKey<TodoItem>(item),
                           onDismissed: (DismissDirection direction) {
                             _deleteItem(item);
                           },
                           child: Material(
                             color: selectionProvider.checkSelection(item)
-                                ? Theme.of(context).colorScheme.secondaryContainer
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer
                                 : null,
                             child: ItemWidget(
                               item: item,
@@ -219,9 +221,11 @@ class _MyHomePageState extends State<MyHomePage> {
               opacity: _isSelecting ? 0 : 1,
               duration: Duration(milliseconds: 200),
               child: FloatingActionButton(
-                  onPressed: _isSelecting ? null : () {
-                    _openItemTap(context: context);
-                  },
+                  onPressed: _isSelecting
+                      ? null
+                      : () {
+                          _openItemTap(context: context);
+                        },
                   tooltip: 'Adicionar',
                   child: Icon(Icons.add)),
             ),

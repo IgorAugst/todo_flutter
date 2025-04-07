@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
+import 'package:todo_flutter/repositories/notification_repository.dart';
 import 'package:todo_flutter/repositories/todo_repository.dart';
 import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 
@@ -54,6 +55,9 @@ class TodoProvider extends ChangeNotifier {
     _items.add(item);
     _sortItems();
     notifyListeners();
+
+    NotificationRepository.showNotification(
+        id: item.id ?? 0, title: item.title, body: item.dateTimeText());
   }
 
   Future<void> removeItem(TodoItem item) async {
