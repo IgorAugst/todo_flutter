@@ -56,7 +56,8 @@ class TodoProvider extends ChangeNotifier {
     _sortItems();
     notifyListeners();
 
-    if (item.dateTime != null) {
+    if (item.dateTime != null &&
+        item.dateTime!.compareTo(DateTime.now()) == 1) {
       NotificationRepository.scheduleNotification(
           id: item.id ?? 0,
           title: item.title,
@@ -77,11 +78,23 @@ class TodoProvider extends ChangeNotifier {
     await todoRepository.updateTodo(item);
     _sortItems();
     notifyListeners();
+
+    if (item.isDone) {
+      NotificationRepository.cancelNotification(item.id!);
+    }
   }
 
   Future<void> updateItem(TodoItem updatedItem) async {
     await todoRepository.updateTodo(updatedItem);
     _sortItems();
     notifyListeners();
+
+    if (updatedItem.dateTime != null) {
+      NotificationRepository.scheduleNotification(
+          id: updatedItem.id ?? 0,
+          title: updatedItem.title,
+          body: updatedItem.dateTimeText(),
+          datetime: updatedItem.dateTime!);
+    }
   }
 }
