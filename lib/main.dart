@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/pages/item_page.dart';
@@ -12,7 +14,9 @@ import 'package:todo_flutter/widgets/item_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationRepository.initNotifications();
+  NotificationRepository.initNotifications();
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
   runApp(
     MultiProvider(

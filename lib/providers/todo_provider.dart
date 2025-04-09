@@ -56,14 +56,20 @@ class TodoProvider extends ChangeNotifier {
     _sortItems();
     notifyListeners();
 
-    NotificationRepository.showNotification(
-        id: item.id ?? 0, title: item.title, body: item.dateTimeText());
+    if (item.dateTime != null) {
+      NotificationRepository.scheduleNotification(
+          id: item.id ?? 0,
+          title: item.title,
+          body: item.dateTimeText(),
+          datetime: item.dateTime!);
+    }
   }
 
   Future<void> removeItem(TodoItem item) async {
     await todoRepository.deleteTodo(item.id!);
     _items.remove(item);
     notifyListeners();
+    await NotificationRepository.cancelNotification(item.id!);
   }
 
   Future<void> toggleItem(TodoItem item) async {
