@@ -26,7 +26,7 @@ void main() async {
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
       // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
-      options.experimental.replay.sessionSampleRate = 1.0;
+      options.experimental.replay.sessionSampleRate = 0.0;
       options.experimental.replay.onErrorSampleRate = 1.0;
     },
     appRunner: () => runApp(SentryWidget(
