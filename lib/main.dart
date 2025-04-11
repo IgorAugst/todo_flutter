@@ -193,39 +193,35 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: todoProvider.getTodoItemCount(
-                      category: _selectedCategory),
-                  itemBuilder: (BuildContext context, int index) {
-                    var item = todoProvider.getTodoItems(
-                        category: _selectedCategory)[index];
+              child: AnimatedList(
+                  itemBuilder: (BuildContext context, int index, animation) {
+                var item = todoProvider.getTodoItems(
+                    category: _selectedCategory)[index];
 
-                    return Dismissible(
-                      background: Container(color: Colors.red),
-                      key: ValueKey<TodoItem>(item),
-                      onDismissed: (DismissDirection direction) {
-                        _deleteItem(item);
+                return Dismissible(
+                  background: Container(color: Colors.red),
+                  key: ValueKey<TodoItem>(item),
+                  onDismissed: (DismissDirection direction) {
+                    _deleteItem(item);
+                  },
+                  child: Material(
+                    color: selectionProvider.checkSelection(item)
+                        ? Theme.of(context).colorScheme.secondaryContainer
+                        : null,
+                    child: ItemWidget(
+                      item: item,
+                      onToggle: todoProvider.toggleItem,
+                      onTap: (item) {
+                        _openItemTap(context: context, item: item);
                       },
-                      child: Material(
-                        color: selectionProvider.checkSelection(item)
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : null,
-                        child: ItemWidget(
-                          item: item,
-                          onToggle: todoProvider.toggleItem,
-                          onTap: (item) {
-                            _openItemTap(context: context, item: item);
-                          },
-                          onLongPress: (item) {
-                            _onItemLongPress(item);
-                          },
-                          showCheckbox: !_isSelecting,
-                        ),
-                      ),
-                    );
-                  }),
+                      onLongPress: (item) {
+                        _onItemLongPress(item);
+                      },
+                      showCheckbox: !_isSelecting,
+                    ),
+                  ),
+                );
+              }),
             ),
             backgroundColor: Theme.of(context).colorScheme.surface,
             floatingActionButton: AnimatedOpacity(
