@@ -56,14 +56,7 @@ class TodoProvider extends ChangeNotifier {
     _sortItems();
     notifyListeners();
 
-    if (item.dateTime != null &&
-        item.dateTime!.compareTo(DateTime.now()) == 1) {
-      NotificationRepository.scheduleNotification(
-          id: item.id ?? 0,
-          title: item.title,
-          body: item.dateTimeText(),
-          datetime: item.dateTime!);
-    }
+    scheduleNotification(item);
   }
 
   Future<void> removeItem(TodoItem item) async {
@@ -81,6 +74,8 @@ class TodoProvider extends ChangeNotifier {
 
     if (item.isDone) {
       NotificationRepository.cancelNotification(item.id!);
+    } else {
+      scheduleNotification(item);
     }
   }
 
@@ -89,12 +84,17 @@ class TodoProvider extends ChangeNotifier {
     _sortItems();
     notifyListeners();
 
-    if (updatedItem.dateTime != null) {
+    scheduleNotification(updatedItem);
+  }
+
+  void scheduleNotification(TodoItem item) {
+    if (item.dateTime != null &&
+        item.dateTime!.compareTo(DateTime.now()) == 1) {
       NotificationRepository.scheduleNotification(
-          id: updatedItem.id ?? 0,
-          title: updatedItem.title,
-          body: updatedItem.dateTimeText(),
-          datetime: updatedItem.dateTime!);
+          id: item.id ?? 0,
+          title: item.title,
+          body: item.dateTimeText(),
+          datetime: item.dateTime!);
     }
   }
 }
