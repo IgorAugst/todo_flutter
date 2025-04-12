@@ -12,7 +12,6 @@ class TodoProvider extends ChangeNotifier {
 
   TodoProvider() {
     _addDefaultCategories();
-    loadItems();
   }
 
   void _addDefaultCategories() {

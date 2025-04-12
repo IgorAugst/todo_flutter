@@ -18,6 +18,8 @@ void main() async {
   NotificationRepository.initNotifications();
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
+  var todoProvider = TodoProvider();
+  await todoProvider.loadItems();
 
   await SentryFlutter.init(
     (options) {
@@ -32,7 +34,7 @@ void main() async {
     appRunner: () => runApp(SentryWidget(
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => TodoProvider()),
+          ChangeNotifierProvider(create: (_) => todoProvider),
           ChangeNotifierProvider(create: (_) => SelectionProvider())
         ],
         child: MyApp(),
@@ -75,7 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
   late TodoProvider _todoProvider;
   late SelectionProvider _selectionProvider;
   bool _isSelecting = false;
-  //final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _todoProvider = Provider.of<TodoProvider>(context, listen: false);
+    _selectionProvider = Provider.of<SelectionProvider>(context, listen: false);
+  }
 
   void _selectDrawer(int index) {
     setState(() {
@@ -143,9 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Consumer2<TodoProvider, SelectionProvider>(
         builder: (context, todoProvider, selectionProvider, child) {
-      _todoProvider = todoProvider;
-      _selectionProvider = selectionProvider;
-
       return PopScope(
         canPop: _selectedIndex == 0 && !_isSelecting,
         onPopInvokedWithResult: (didPop, result) {
@@ -194,34 +200,39 @@ class _MyHomePageState extends State<MyHomePage> {
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
               child: AnimatedList(
+                  key: _listKey,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  initialItemCount: todoProvider.getTodoItemCount(
+                      category: _selectedCategory),
                   itemBuilder: (BuildContext context, int index, animation) {
-                var item = todoProvider.getTodoItems(
-                    category: _selectedCategory)[index];
+                    var item = todoProvider.getTodoItems(
+                        category: _selectedCategory)[index];
 
-                return Dismissible(
-                  background: Container(color: Colors.red),
-                  key: ValueKey<TodoItem>(item),
-                  onDismissed: (DismissDirection direction) {
-                    _deleteItem(item);
-                  },
-                  child: Material(
-                    color: selectionProvider.checkSelection(item)
-                        ? Theme.of(context).colorScheme.secondaryContainer
-                        : null,
-                    child: ItemWidget(
-                      item: item,
-                      onToggle: todoProvider.toggleItem,
-                      onTap: (item) {
-                        _openItemTap(context: context, item: item);
+                    return Dismissible(
+                      background: Container(color: Colors.red),
+                      key: ValueKey<TodoItem>(item),
+                      onDismissed: (DismissDirection direction) {
+                        _deleteItem(item);
                       },
-                      onLongPress: (item) {
-                        _onItemLongPress(item);
-                      },
-                      showCheckbox: !_isSelecting,
-                    ),
-                  ),
-                );
-              }),
+                      child: Material(
+                        color: selectionProvider.checkSelection(item)
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : null,
+                        child: ItemWidget(
+                          item: item,
+                          onToggle: todoProvider.toggleItem,
+                          onTap: (item) {
+                            _openItemTap(context: context, item: item);
+                          },
+                          onLongPress: (item) {
+                            _onItemLongPress(item);
+                          },
+                          showCheckbox: !_isSelecting,
+                        ),
+                      ),
+                    );
+                  }),
             ),
             backgroundColor: Theme.of(context).colorScheme.surface,
             floatingActionButton: AnimatedOpacity(
