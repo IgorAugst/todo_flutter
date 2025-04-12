@@ -104,9 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) => ItemPage(
                     title: item == null ? "Adicionar" : "Editar",
                     item: item,
-                    onSubmit: (newItem) {
+                    onSubmit: (newItem) async {
                       if (item == null) {
-                        _todoProvider.addItem(newItem);
+                        await _todoProvider.addItem(newItem);
+                        var newIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(newItem);
+                        _listKey.currentState?.insertItem(newIndex, duration: Duration(seconds: 3));
                       } else {
                         _todoProvider.updateItem(item.updateFrom(newItem));
                       }
@@ -128,14 +130,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _deleteSelection() {
-    for (var item in _selectionProvider.selectedItems) {
-      _todoProvider.removeItem(item);
-      _selectionProvider.clearSelection();
-      _isSelecting = false;
+    final selectedItems = List<TodoItem>.from(_selectionProvider.selectedItems);
+    selectedItems.sort((a, b) {
+      final aIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(a);
+      final bIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(b);
+      return bIndex.compareTo(aIndex); // ordem decrescente
+    });
+
+    for (var item in selectedItems) {
+      _deleteItem(item);
     }
+    _clearSelection();
   }
 
   void _deleteItem(TodoItem item) {
+    var itemIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(item);
+    _listKey.currentState?.removeItem(itemIndex, (context, animation) {
+      return SizeTransition(
+        sizeFactor: animation,
+        axis: Axis.vertical,
+        child: ItemWidget(
+          item: item,
+          onToggle: _todoProvider.toggleItem,
+          onTap: (item) {
+            _openItemTap(context: context, item: item);
+          },
+          showCheckbox: false,
+        ),
+      );
+    }, duration: Duration(milliseconds: 3000));
     _todoProvider.removeItem(item);
   }
 
@@ -198,18 +221,19 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             )),
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
-            body: SingleChildScrollView(
-              child: AnimatedList(
-                  key: _listKey,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  initialItemCount: todoProvider.getTodoItemCount(
-                      category: _selectedCategory),
-                  itemBuilder: (BuildContext context, int index, animation) {
-                    var item = todoProvider.getTodoItems(
-                        category: _selectedCategory)[index];
+            body: AnimatedList(
+                key: _listKey,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                initialItemCount: todoProvider.getTodoItemCount(
+                    category: _selectedCategory),
+                itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+                  var item = todoProvider.getTodoItems(category: _selectedCategory)[index];
 
-                    return Dismissible(
+                  return SizeTransition(
+                    sizeFactor: animation,
+                    axis: Axis.vertical,
+                    child: Dismissible(
                       background: Container(color: Colors.red),
                       key: ValueKey<TodoItem>(item),
                       onDismissed: (DismissDirection direction) {
@@ -231,8 +255,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           showCheckbox: !_isSelecting,
                         ),
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                }
             ),
             backgroundColor: Theme.of(context).colorScheme.surface,
             floatingActionButton: AnimatedOpacity(
