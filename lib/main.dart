@@ -78,12 +78,29 @@ class _MyHomePageState extends State<MyHomePage> {
   late SelectionProvider _selectionProvider;
   bool _isSelecting = false;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late List<TodoItem> _todoList;
 
   @override
   void initState() {
     super.initState();
     _todoProvider = Provider.of<TodoProvider>(context, listen: false);
     _selectionProvider = Provider.of<SelectionProvider>(context, listen: false);
+    _todoList = _todoProvider.getTodoItems(category: _selectedCategory);
+    _todoProvider.addListener(_onProviderChange);
+  }
+
+  @override
+  void dispose() {
+    _todoProvider.removeListener(_onProviderChange);
+    super.dispose();
+  }
+
+  void _onProviderChange() {
+    if (mounted) {
+      setState(() {
+        _updateListView();
+      });
+    }
   }
 
   void _selectDrawer(int index) {
@@ -107,8 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     onSubmit: (newItem) async {
                       if (item == null) {
                         await _todoProvider.addItem(newItem);
-                        var newIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(newItem);
-                        _listKey.currentState?.insertItem(newIndex, duration: Duration(seconds: 3));
                       } else {
                         _todoProvider.updateItem(item.updateFrom(newItem));
                       }
@@ -131,12 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _deleteSelection() {
     final selectedItems = List<TodoItem>.from(_selectionProvider.selectedItems);
-    selectedItems.sort((a, b) {
-      final aIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(a);
-      final bIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(b);
-      return bIndex.compareTo(aIndex); // ordem decrescente
-    });
-
     for (var item in selectedItems) {
       _deleteItem(item);
     }
@@ -144,21 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _deleteItem(TodoItem item) {
-    var itemIndex = _todoProvider.getTodoItems(category: _selectedCategory).indexOf(item);
-    _listKey.currentState?.removeItem(itemIndex, (context, animation) {
-      return SizeTransition(
-        sizeFactor: animation,
-        axis: Axis.vertical,
-        child: ItemWidget(
-          item: item,
-          onToggle: _todoProvider.toggleItem,
-          onTap: (item) {
-            _openItemTap(context: context, item: item);
-          },
-          showCheckbox: false,
-        ),
-      );
-    }, duration: Duration(milliseconds: 3000));
     _todoProvider.removeItem(item);
   }
 
@@ -167,6 +161,57 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectionProvider.clearSelection();
       _isSelecting = false;
     });
+  }
+
+  void _insertAnimation(int index) {
+    _listKey.currentState
+        ?.insertItem(index, duration: Duration(milliseconds: 300));
+  }
+
+  void _removeAnimation(int index) {
+    _listKey.currentState?.removeItem(index, (context, animation) {
+      return SizeTransition(
+        sizeFactor: animation,
+        axis: Axis.vertical,
+        child: ItemWidget(
+          item: _todoList[index],
+          onToggle: _todoProvider.toggleItem,
+          onTap: (item) {
+            _openItemTap(context: context, item: item);
+          },
+          showCheckbox: false,
+        ),
+      );
+    }, duration: Duration(milliseconds: 300));
+  }
+
+  void _updateListView() async {
+    var newItems = _todoProvider.getTodoItems(category: _selectedCategory);
+
+    for (var item in newItems) {
+      if (!_todoList.contains(item)) {
+        var index = newItems.indexOf(item);
+        _insertAnimation(index);
+        _todoList.insert(index, item);
+      } else if (newItems.indexOf(item) != _todoList.indexOf(item)) {
+        var oldIndex = _todoList.indexOf(item);
+        var newIndex = newItems.indexOf(item);
+        await Future.delayed(Duration(milliseconds: 300), () {
+          _removeAnimation(oldIndex);
+        });
+        _insertAnimation(newIndex);
+        _todoList.removeAt(oldIndex);
+        _todoList.insert(newIndex, item);
+      }
+    }
+
+    for (var item in _todoList) {
+      if (!newItems.contains(item)) {
+        var index = _todoList.indexOf(item);
+        _removeAnimation(index);
+        _todoList.removeAt(index);
+      }
+    }
   }
 
   @override
@@ -225,10 +270,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 key: _listKey,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                initialItemCount: todoProvider.getTodoItemCount(
-                    category: _selectedCategory),
-                itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                  var item = todoProvider.getTodoItems(category: _selectedCategory)[index];
+                initialItemCount:
+                    todoProvider.getTodoItemCount(category: _selectedCategory),
+                itemBuilder: (BuildContext context, int index,
+                    Animation<double> animation) {
+                  var item = _todoList[index];
 
                   return SizeTransition(
                     sizeFactor: animation,
@@ -257,8 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   );
-                }
-            ),
+                }),
             backgroundColor: Theme.of(context).colorScheme.surface,
             floatingActionButton: AnimatedOpacity(
               opacity: _isSelecting ? 0 : 1,

@@ -26,7 +26,7 @@ class TodoProvider extends ChangeNotifier {
 
   List<TodoItem> getTodoItems({Category category = const Category()}) {
     if (category.isDone == null) {
-      return _items;
+      return List.from(_items);
     }
     return _items.where((item) => item.isDone == category.isDone).toList();
   }
