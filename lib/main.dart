@@ -165,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _insertAnimation(int index) {
     _listKey.currentState
-        ?.insertItem(index, duration: Duration(milliseconds: 300));
+        ?.insertItem(index, duration: Duration(milliseconds: 3000));
   }
 
   void _removeAnimation(int index) {
@@ -182,34 +182,42 @@ class _MyHomePageState extends State<MyHomePage> {
           showCheckbox: false,
         ),
       );
-    }, duration: Duration(milliseconds: 300));
+    }, duration: Duration(milliseconds: 3000));
   }
 
   void _updateListView() async {
     var newItems = _todoProvider.getTodoItems(category: _selectedCategory);
 
-    for (var item in newItems) {
-      if (!_todoList.contains(item)) {
-        var index = newItems.indexOf(item);
-        _insertAnimation(index);
-        _todoList.insert(index, item);
-      } else if (newItems.indexOf(item) != _todoList.indexOf(item)) {
-        var oldIndex = _todoList.indexOf(item);
-        var newIndex = newItems.indexOf(item);
-        await Future.delayed(Duration(milliseconds: 300), () {
-          _removeAnimation(oldIndex);
-        });
-        _insertAnimation(newIndex);
-        _todoList.removeAt(oldIndex);
-        _todoList.insert(newIndex, item);
+    for (var itemOld in _todoList) {
+      if (!newItems.contains(itemOld)) {
+        int index = _todoList.indexOf(itemOld);
+        _todoList.removeAt(index);
+        _removeAnimation(index);
       }
     }
 
-    for (var item in _todoList) {
-      if (!newItems.contains(item)) {
-        var index = _todoList.indexOf(item);
-        _removeAnimation(index);
-        _todoList.removeAt(index);
+    for (var itemNew in newItems) {
+      if (!_todoList.contains(itemNew)) {
+        _todoList.add(itemNew);
+        int index = _todoList.indexOf(itemNew);
+        _insertAnimation(index);
+      }
+    }
+
+    var i = 0;
+
+    while (i < _todoList.length) {
+      if (_todoList[i] != newItems[i]) {
+        var oldIdx = i;
+        var newIdx = newItems.indexOf(_todoList[i]);
+
+        _removeAnimation(oldIdx);
+        _insertAnimation(newIdx);
+
+        _todoList.removeAt(oldIdx);
+        _todoList.insert(newIdx, newItems[newIdx]);
+      } else {
+        i++;
       }
     }
   }
