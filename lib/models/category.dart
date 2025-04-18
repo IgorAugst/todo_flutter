@@ -3,5 +3,5 @@ class Category {
   final String name;
   final bool? isDone;
 
-  const Category({this.id, this.name = "All", this.isDone});
+  const Category({this.id, this.name = "Todos", this.isDone});
 }
