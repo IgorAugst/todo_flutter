@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
+import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -26,7 +29,6 @@ void main() async {
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
       // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
-      options.experimental.replay.sessionSampleRate = 0.0;
       options.experimental.replay.onErrorSampleRate = 1.0;
     },
     appRunner: () => runApp(SentryWidget(
@@ -193,35 +195,47 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
-              child: ListView.builder(
+              child: ImplicitlyAnimatedList<TodoItem>(
+                  areItemsTheSame: (TodoItem a, TodoItem b) => a.id == b.id,
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: todoProvider.getTodoItemCount(
+                  items: todoProvider.getTodoItems(
                       category: _selectedCategory),
-                  itemBuilder: (BuildContext context, int index) {
-                    var item = todoProvider.getTodoItems(
-                        category: _selectedCategory)[index];
-
-                    return Dismissible(
-                      background: Container(color: Colors.red),
-                      key: ValueKey<TodoItem>(item),
-                      onDismissed: (DismissDirection direction) {
-                        _deleteItem(item);
-                      },
-                      child: Material(
-                        color: selectionProvider.checkSelection(item)
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : null,
-                        child: ItemWidget(
-                          item: item,
-                          onToggle: todoProvider.toggleItem,
-                          onTap: (item) {
-                            _openItemTap(context: context, item: item);
-                          },
-                          onLongPress: (item) {
-                            _onItemLongPress(item);
-                          },
-                          showCheckbox: !_isSelecting,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, animation, item, int index) {
+                    return SizeFadeTransition(
+                      sizeFraction: 0.7,
+                      curve: Curves.easeInOut,
+                      animation: animation,
+                      child: Slidable(
+                        startActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children:[
+                            SlidableAction(
+                              onPressed: (context) {
+                                _deleteItem(item);
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                            )
+                          ]
+                        ),
+                        child: Material(
+                          color: selectionProvider.checkSelection(item)
+                              ? Theme.of(context).colorScheme.secondaryContainer
+                              : null,
+                          child: ItemWidget(
+                            key: ValueKey(item.id),
+                            item: item,
+                            onToggle: todoProvider.toggleItem,
+                            onTap: (item) {
+                              _openItemTap(context: context, item: item);
+                            },
+                            onLongPress: (item) {
+                              _onItemLongPress(item);
+                            },
+                            showCheckbox: !_isSelecting,
+                          ),
                         ),
                       ),
                     );

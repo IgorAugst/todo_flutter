@@ -41,6 +41,8 @@ dependencies:
   sqflite: ^2.4.2
   path: ^1.9.1
   flutter_local_notifications: ^19.0.0
+  implicitly_animated_reorderable_list_2: ^0.6.0
+  flutter_slidable: ^4.0.0
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1
