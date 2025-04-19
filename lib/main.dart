@@ -198,28 +198,26 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ImplicitlyAnimatedList<TodoItem>(
                   areItemsTheSame: (TodoItem a, TodoItem b) => a.id == b.id,
                   shrinkWrap: true,
-                  items: todoProvider.getTodoItems(
-                      category: _selectedCategory),
+                  items: todoProvider.getTodoItems(category: _selectedCategory),
                   physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, animation, item, int index) {
+                  itemBuilder:
+                      (BuildContext context, animation, item, int index) {
                     return SizeFadeTransition(
                       sizeFraction: 0.7,
                       curve: Curves.easeInOut,
                       animation: animation,
                       child: Slidable(
-                        startActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children:[
-                            SlidableAction(
-                              onPressed: (context) {
-                                _deleteItem(item);
-                              },
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                            )
-                          ]
-                        ),
+                        startActionPane:
+                            ActionPane(motion: const ScrollMotion(), children: [
+                          SlidableAction(
+                            onPressed: (context) {
+                              _deleteItem(item);
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                          )
+                        ]),
                         child: Material(
                           color: selectionProvider.checkSelection(item)
                               ? Theme.of(context).colorScheme.secondaryContainer
