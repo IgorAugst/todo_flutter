@@ -180,18 +180,28 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             drawer: Drawer(
-                child: ListView.builder(
-              itemCount: todoProvider.categoryCount,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  tileColor: index == _selectedIndex ? selectedColor : null,
-                  title: Text(todoProvider.categories[index].name),
-                  onTap: () {
-                    _selectDrawer(index);
-                    Navigator.pop(context);
+                child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: todoProvider.categoryCount,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      tileColor: index == _selectedIndex ? selectedColor : null,
+                      title: Text(todoProvider.categories[index].name),
+                      onTap: () {
+                        _selectDrawer(index);
+                        Navigator.pop(context);
+                      },
+                    );
                   },
-                );
-              },
+                ),
+                const Divider(),
+                ListTile(
+                  title: Text("Categorias"),
+                  onTap: () {},
+                )
+              ],
             )),
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
