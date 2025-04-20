@@ -198,7 +198,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const Divider(),
                 ListTile(
-                  title: Text("Categorias"),
+                  leading: Icon(Icons.add),
+                  title: Text("Adicionar categoria"),
                   onTap: () {},
                 )
               ],
