@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:todo_flutter/dialogs/category_dialog.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/pages/item_page.dart';
@@ -200,7 +201,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ListTile(
                   leading: Icon(Icons.add),
                   title: Text("Adicionar categoria"),
-                  onTap: () {},
+                  onTap: () async {
+                    return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CategoryDialog();
+                        });
+                  },
                 )
               ],
             )),
