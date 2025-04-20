@@ -10,15 +10,19 @@ class TodoProvider extends ChangeNotifier {
   List<TodoItem> _items = [];
   final TodoRepository todoRepository = TodoRepositorySqlite();
 
+  int get categoryCount => _categories.length;
+  List<Category> get categories => List.unmodifiable(_categories);
+
   TodoProvider() {
     _addDefaultCategories();
     loadItems();
   }
 
   void _addDefaultCategories() {
-    _categories.add(Category(name: 'Todos', isDone: null));
-    _categories.add(Category(name: 'Completos', isDone: true));
-    _categories.add(Category(name: 'Incompletos', isDone: false));
+    _categories.add(Category(name: 'Todos', isDone: null, isDefault: true));
+    _categories.add(Category(name: 'Completos', isDone: true, isDefault: true));
+    _categories
+        .add(Category(name: 'Incompletos', isDone: false, isDefault: true));
   }
 
   void _sortItems() {
@@ -38,9 +42,6 @@ class TodoProvider extends ChangeNotifier {
 
   int get itemCount => _items.length;
   List<TodoItem> get items => List.unmodifiable(_items);
-
-  int get categoryCount => _categories.length;
-  List<Category> get categories => List.unmodifiable(_categories);
 
   Future<List<TodoItem>> loadItems() async {
     _items = await todoRepository.getTodos();
