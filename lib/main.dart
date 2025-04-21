@@ -19,7 +19,7 @@ import 'package:todo_flutter/widgets/item_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  NotificationRepository.initNotifications();
+  await NotificationRepository.initNotifications();
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
@@ -277,7 +277,23 @@ class _MyHomePageState extends State<MyHomePage> {
           tileColor: category == _selectedCategory
               ? Theme.of(context).colorScheme.primaryContainer
               : null,
-          title: Text(category.name),
+          title: Row(
+            children: [
+              Text(category.name),
+              Spacer(),
+              if (!category.isDefault)
+                PopupMenuButton(
+                    itemBuilder: (BuildContext context) => [
+                          PopupMenuItem(child: Text('Renomear')),
+                          PopupMenuItem(
+                              child: Text(
+                            'Deletar',
+                            style: TextStyle(color: Colors.red),
+                          ))
+                        ],
+                    child: Icon(Icons.more_vert))
+            ],
+          ),
           onTap: () {
             _selectCategory(category);
             Navigator.pop(context);
