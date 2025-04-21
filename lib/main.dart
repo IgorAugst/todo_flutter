@@ -73,21 +73,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  Category _selectedCategory = Category();
+  late Category _selectedCategory;
+  late Category _mainCategory;
   late TodoProvider _todoProvider;
   late SelectionProvider _selectionProvider;
   bool _isSelecting = false;
-  //final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  void _selectDrawer(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _selectedCategory = _todoProvider.categories[index];
-      if (_isSelecting) {
-        _clearSelection();
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
+    final categories =
+        Provider.of<TodoProvider>(context, listen: false).categories;
+    if (categories.isNotEmpty) {
+      _mainCategory = _selectedCategory = categories.first;
+    }
   }
 
   void _openItemTap({required BuildContext context, TodoItem? item}) {
@@ -106,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       }
                     },
                   ))).then((_) {
-        _selectDrawer(0);
+        _selectCategory(_mainCategory);
       });
     } else {
       _onItemLongPress(item);
@@ -119,6 +118,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     _isSelecting = _selectionProvider.length() > 0;
+  }
+
+  void _selectCategory(Category category) {
+    setState(() {
+      _selectedCategory = category;
+      if (_isSelecting) _clearSelection();
+    });
   }
 
   void _deleteSelection() {
@@ -142,18 +148,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Color selectedColor = Theme.of(context).colorScheme.primaryContainer;
-
     return Consumer2<TodoProvider, SelectionProvider>(
         builder: (context, todoProvider, selectionProvider, child) {
       _todoProvider = todoProvider;
       _selectionProvider = selectionProvider;
 
       return PopScope(
-        canPop: _selectedIndex == 0 && !_isSelecting,
+        canPop: _selectedCategory == _mainCategory && !_isSelecting,
         onPopInvokedWithResult: (didPop, result) {
           if (!_isSelecting) {
-            _selectDrawer(0);
+            _selectCategory(_mainCategory);
           } else {
             _clearSelection();
           }
@@ -181,35 +185,25 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             drawer: Drawer(
-                child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: todoProvider.categoryCount,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      tileColor: index == _selectedIndex ? selectedColor : null,
-                      title: Text(todoProvider.categories[index].name),
-                      onTap: () {
-                        _selectDrawer(index);
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  leading: Icon(Icons.add),
-                  title: Text("Adicionar categoria"),
-                  onTap: () async {
-                    return showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CategoryDialog();
-                        });
-                  },
-                )
-              ],
+                child: SafeArea(
+              child: Column(
+                children: [
+                  _buildCategoryList(
+                      todoProvider.getCategories(isDefault: true)),
+                  const Divider(),
+                  _buildCategoryList(
+                      todoProvider.getCategories(isDefault: false)),
+                  ListTile(
+                    leading: Icon(Icons.add),
+                    title: Text("Adicionar categoria"),
+                    onTap: () async {
+                      return showDialog(
+                          context: context,
+                          builder: (BuildContext context) => CategoryDialog());
+                    },
+                  )
+                ],
+              ),
             )),
             drawerEdgeDragWidth: MediaQuery.of(context).size.width / 4,
             body: SingleChildScrollView(
@@ -274,5 +268,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     });
+  }
+
+  Widget _buildCategoryList(List<Category> categories) {
+    return Column(
+      children: categories.map((category) {
+        return ListTile(
+          tileColor: category == _selectedCategory
+              ? Theme.of(context).colorScheme.primaryContainer
+              : null,
+          title: Text(category.name),
+          onTap: () {
+            _selectCategory(category);
+            Navigator.pop(context);
+          },
+        );
+      }).toList(),
+    );
   }
 }

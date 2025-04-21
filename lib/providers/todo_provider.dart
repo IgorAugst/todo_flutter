@@ -18,11 +18,25 @@ class TodoProvider extends ChangeNotifier {
     loadItems();
   }
 
+  int getCategoriesCount({bool? isDone, bool? isDefault}) {
+    return getCategories(isDone: isDone, isDefault: isDefault).length;
+  }
+
+  List<Category> getCategories({bool? isDone, bool? isDefault}) {
+    return _categories
+        .where((category) =>
+            (isDone == null || category.isDone == isDone) &&
+            (isDefault == null || category.isDefault == isDefault))
+        .toList();
+  }
+
   void _addDefaultCategories() {
     _categories.add(Category(name: 'Todos', isDone: null, isDefault: true));
     _categories.add(Category(name: 'Completos', isDone: true, isDefault: true));
     _categories
         .add(Category(name: 'Incompletos', isDone: false, isDefault: true));
+    _categories
+        .add(Category(name: 'Nova categoria', isDone: null, isDefault: false));
   }
 
   void _sortItems() {
