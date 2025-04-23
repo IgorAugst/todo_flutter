@@ -102,6 +102,16 @@ class TodoProvider extends ChangeNotifier {
     scheduleNotification(updatedItem);
   }
 
+  void insertCategory(String title) {
+    _categories.add(Category(name: title, isDone: null, isDefault: false));
+    notifyListeners();
+  }
+
+  void deleteCategory(Category category) {
+    _categories.remove(category);
+    notifyListeners();
+  }
+
   void scheduleNotification(TodoItem item) {
     if (item.dateTime != null &&
         item.dateTime!.compareTo(DateTime.now()) == 1) {

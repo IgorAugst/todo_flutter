@@ -199,7 +199,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     onTap: () async {
                       return showDialog(
                           context: context,
-                          builder: (BuildContext context) => CategoryDialog());
+                          builder: (BuildContext context) => CategoryDialog(
+                                onSave: (String name) {
+                                  todoProvider.insertCategory(name);
+                                  Navigator.pop(context);
+                                },
+                              ));
                     },
                   )
                 ],
