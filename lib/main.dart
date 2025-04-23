@@ -289,12 +289,31 @@ class _MyHomePageState extends State<MyHomePage> {
               if (!category.isDefault)
                 PopupMenuButton(
                     itemBuilder: (BuildContext context) => [
-                          PopupMenuItem(child: Text('Renomear')),
                           PopupMenuItem(
-                              child: Text(
-                            'Deletar',
-                            style: TextStyle(color: Colors.red),
-                          ))
+                            child: Text('Renomear'),
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CategoryDialog(
+                                        category: category,
+                                        onSave: (String name) {
+                                          _todoProvider.updateCategory(
+                                              category, name);
+                                          Navigator.pop(context);
+                                        },
+                                      ));
+                            },
+                          ),
+                          PopupMenuItem(
+                            child: Text(
+                              'Deletar',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onTap: () {
+                              _todoProvider.deleteCategory(category);
+                            },
+                          )
                         ],
                     child: Icon(Icons.more_vert))
             ],

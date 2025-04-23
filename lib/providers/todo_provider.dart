@@ -43,14 +43,22 @@ class TodoProvider extends ChangeNotifier {
     _items.sort();
   }
 
-  List<TodoItem> getTodoItems({Category category = const Category()}) {
+  List<TodoItem> getTodoItems({Category? category}) {
+    if (category == null) {
+      return _items;
+    }
+
     if (category.isDone == null) {
       return _items;
     }
     return _items.where((item) => item.isDone == category.isDone).toList();
   }
 
-  int getTodoItemCount({Category category = const Category()}) {
+  int getTodoItemCount({Category? category}) {
+    if (category == null) {
+      return _items.length;
+    }
+
     return getTodoItems(category: category).length;
   }
 
@@ -110,6 +118,14 @@ class TodoProvider extends ChangeNotifier {
   void deleteCategory(Category category) {
     _categories.remove(category);
     notifyListeners();
+  }
+
+  void updateCategory(Category category, String newName) {
+    int index = _categories.indexOf(category);
+    if (index != -1) {
+      _categories[index] = Category();
+      notifyListeners();
+    }
   }
 
   void scheduleNotification(TodoItem item) {
