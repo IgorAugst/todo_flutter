@@ -3,23 +3,23 @@ import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
   static void _createTodoTable(Database db, int version) {
-    db.execute('CREATE TABLE todos('
-        'id INTEGER PRIMARY KEY,'
-        'title TEXT NOT NULL,'
-        'isDone INTEGER DEFAULT 0,'
-        'dateTime TEXT,'
-        'allDay INTEGER DEFAULT 0'
-        'categoryId INTEGER'
-        ')');
+    db.execute('''CREATE TABLE todos(
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        isDone INTEGER DEFAULT 0,
+        dateTime TEXT,
+        allDay INTEGER DEFAULT 0,
+        categoryId INTEGER
+        )''');
   }
 
   static void _createCategoryTable(Database db, int version) {
-    db.execute('CREATE TABLE categories('
-        'id INTEGER PRIMARY KEY,'
-        'name TEXT NOT NULL,'
-        'isDone INTEGER DEFAULT 0,'
-        'isDefault INTEGER DEFAULT 0'
-        ')');
+    db.execute('''CREATE TABLE categories(
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        isDone INTEGER DEFAULT 0,
+        isDefault INTEGER DEFAULT 0
+        )''');
   }
 
   static void _updateTodoTable(Database db, int oldVersion, int newVersion) {
@@ -46,6 +46,7 @@ class AppDatabase {
       _createCategoryTable(db, version);
     }, onUpgrade: (db, oldVersion, newVersion) {
       _updateTodoTable(db, oldVersion, newVersion);
+      _createCategoryTable(db, newVersion);
     }, version: 2);
   }
 }
