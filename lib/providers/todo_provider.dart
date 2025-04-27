@@ -6,37 +6,11 @@ import 'package:todo_flutter/repositories/todo_repository.dart';
 import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 
 class TodoProvider extends ChangeNotifier {
-  final List<Category> _categories = [];
   List<TodoItem> _items = [];
   final TodoRepository todoRepository = TodoRepositorySqlite();
 
-  int get categoryCount => _categories.length;
-  List<Category> get categories => List.unmodifiable(_categories);
-
   TodoProvider() {
-    _addDefaultCategories();
     loadItems();
-  }
-
-  int getCategoriesCount({bool? isDone, bool? isDefault}) {
-    return getCategories(isDone: isDone, isDefault: isDefault).length;
-  }
-
-  List<Category> getCategories({bool? isDone, bool? isDefault}) {
-    return _categories
-        .where((category) =>
-            (isDone == null || category.isDone == isDone) &&
-            (isDefault == null || category.isDefault == isDefault))
-        .toList();
-  }
-
-  void _addDefaultCategories() {
-    _categories.add(Category(name: 'Todos', isDone: null, isDefault: true));
-    _categories.add(Category(name: 'Completos', isDone: true, isDefault: true));
-    _categories
-        .add(Category(name: 'Incompletos', isDone: false, isDefault: true));
-    _categories
-        .add(Category(name: 'Nova categoria', isDone: null, isDefault: false));
   }
 
   void _sortItems() {
@@ -108,24 +82,6 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
 
     scheduleNotification(updatedItem);
-  }
-
-  void insertCategory(String title) {
-    _categories.add(Category(name: title, isDone: null, isDefault: false));
-    notifyListeners();
-  }
-
-  void deleteCategory(Category category) {
-    _categories.remove(category);
-    notifyListeners();
-  }
-
-  void updateCategory(Category category, String newName) {
-    int index = _categories.indexOf(category);
-    if (index != -1) {
-      _categories[index] = Category();
-      notifyListeners();
-    }
   }
 
   void scheduleNotification(TodoItem item) {

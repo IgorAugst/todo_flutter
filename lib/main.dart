@@ -12,6 +12,7 @@ import 'package:todo_flutter/dialogs/category_dialog.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/pages/item_page.dart';
+import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/selection_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 import 'package:todo_flutter/repositories/notification_repository.dart';
@@ -36,7 +37,8 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => TodoProvider()),
-          ChangeNotifierProvider(create: (_) => SelectionProvider())
+          ChangeNotifierProvider(create: (_) => SelectionProvider()),
+          ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ],
         child: MyApp(),
       ),
@@ -77,13 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
   late Category _mainCategory;
   late TodoProvider _todoProvider;
   late SelectionProvider _selectionProvider;
+  late CategoryProvider _categoryProvider;
   bool _isSelecting = false;
 
   @override
   void initState() {
     super.initState();
     final categories =
-        Provider.of<TodoProvider>(context, listen: false).categories;
+        Provider.of<CategoryProvider>(context, listen: false).categories;
     if (categories.isNotEmpty) {
       _mainCategory = _selectedCategory = categories.first;
     }
@@ -148,10 +151,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<TodoProvider, SelectionProvider>(
-        builder: (context, todoProvider, selectionProvider, child) {
+    return Consumer3<TodoProvider, SelectionProvider, CategoryProvider>(builder:
+        (context, todoProvider, selectionProvider, categoryProvider, child) {
       _todoProvider = todoProvider;
       _selectionProvider = selectionProvider;
+      _categoryProvider = categoryProvider;
 
       return PopScope(
         canPop: _selectedCategory == _mainCategory && !_isSelecting,
@@ -189,10 +193,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 children: [
                   _buildCategoryList(
-                      todoProvider.getCategories(isDefault: true)),
+                      categoryProvider.getCategories(isDefault: true)),
                   const Divider(),
                   _buildCategoryList(
-                      todoProvider.getCategories(isDefault: false)),
+                      categoryProvider.getCategories(isDefault: false)),
                   ListTile(
                     leading: Icon(Icons.add),
                     title: Text("Adicionar categoria"),
@@ -201,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context: context,
                           builder: (BuildContext context) => CategoryDialog(
                                 onSave: (String name) {
-                                  todoProvider.insertCategory(name);
+                                  categoryProvider.insertCategory(name);
                                   Navigator.pop(context);
                                 },
                               ));
@@ -298,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       CategoryDialog(
                                         category: category,
                                         onSave: (String name) {
-                                          _todoProvider.updateCategory(
+                                          _categoryProvider.updateCategory(
                                               category, name);
                                           Navigator.pop(context);
                                         },
@@ -311,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               style: TextStyle(color: Colors.red),
                             ),
                             onTap: () {
-                              _todoProvider.deleteCategory(category);
+                              _categoryProvider.deleteCategory(category);
                             },
                           )
                         ],
