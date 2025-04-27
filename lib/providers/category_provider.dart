@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:todo_flutter/models/category.dart';
+import 'package:todo_flutter/repositories/category_repository.dart';
+import 'package:todo_flutter/repositories/category_repository_sqlite.dart';
 
 class CategoryProvider extends ChangeNotifier {
+  List<Category> _categories = [];
+
+  final CategoryRepository _categoryRepository = CategoryRepositorySQLite();
+
   CategoryProvider() {
     _addDefaultCategories();
+    loadCategories();
   }
-
-  final List<Category> _categories = [];
 
   int get categoryCount => _categories.length;
   List<Category> get categories => List.unmodifiable(_categories);
@@ -19,6 +24,12 @@ class CategoryProvider extends ChangeNotifier {
         .toList();
   }
 
+  Future<List<Category>> loadCategories() async {
+    _categories.addAll(await _categoryRepository.getCategories());
+    notifyListeners();
+    return _categories;
+  }
+
   int getCategoriesCount({bool? isDone, bool? isDefault}) {
     return getCategories(isDone: isDone, isDefault: isDefault).length;
   }
@@ -28,8 +39,6 @@ class CategoryProvider extends ChangeNotifier {
     _categories.add(Category(name: 'Completos', isDone: true, isDefault: true));
     _categories
         .add(Category(name: 'Incompletos', isDone: false, isDefault: true));
-    _categories
-        .add(Category(name: 'Nova categoria', isDone: null, isDefault: false));
   }
 
   void insertCategory(String title) {
