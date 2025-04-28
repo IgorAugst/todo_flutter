@@ -4,7 +4,7 @@ import 'package:todo_flutter/repositories/category_repository.dart';
 import 'package:todo_flutter/repositories/category_repository_sqlite.dart';
 
 class CategoryProvider extends ChangeNotifier {
-  List<Category> _categories = [];
+  final List<Category> _categories = [];
 
   final CategoryRepository _categoryRepository = CategoryRepositorySQLite();
 
@@ -41,21 +41,27 @@ class CategoryProvider extends ChangeNotifier {
         .add(Category(name: 'Incompletos', isDone: false, isDefault: true));
   }
 
-  void insertCategory(String title) {
-    _categories.add(Category(name: title, isDone: null, isDefault: false));
+  void insertCategory(String title) async {
+    var newCategory = Category(
+      name: title,
+      isDone: null,
+      isDefault: false,
+    );
+
+    await _categoryRepository.addCategory(newCategory);
+    _categories.add(newCategory);
     notifyListeners();
   }
 
-  void deleteCategory(Category category) {
+  void deleteCategory(Category category) async {
+    await _categoryRepository.deleteCategory(category.id!);
+
     _categories.remove(category);
     notifyListeners();
   }
 
-  void updateCategory(Category category, String newName) {
-    int index = _categories.indexOf(category);
-    if (index != -1) {
-      _categories[index] = Category();
-      notifyListeners();
-    }
+  void updateCategory(Category category, String newName) async {
+    category.name = newName;
+    await _categoryRepository.updateCategory(category);
   }
 }

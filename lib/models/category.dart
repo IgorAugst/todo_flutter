@@ -16,7 +16,8 @@ class Category {
     return Category(
       id: int.tryParse(map['id'].toString()),
       name: map['name'].toString(),
-      isDone: map['isDone'] == 1 ? true : false,
+      isDone:
+          map['isDone'] == null ? null : (map['isDone'] == 1 ? true : false),
       isDefault: map['isDefault'] == 1 ? true : false,
     );
   }
@@ -25,7 +26,7 @@ class Category {
     return {
       'id': id,
       'name': name,
-      'isDone': isDone == true ? 1 : 0,
+      'isDone': isDone == null ? null : (isDone == true ? 1 : 0),
       'isDefault': isDefault == true ? 1 : 0,
     };
   }
