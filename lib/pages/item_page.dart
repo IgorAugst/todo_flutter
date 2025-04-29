@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/todo_item.dart';
+import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
-import 'package:intl/intl.dart';
 
 class ItemPage extends StatefulWidget {
   final String title;
   final TodoItem? item;
   final Function(TodoItem) onSubmit;
 
-  const ItemPage({super.key, required this.title, required this.onSubmit, this.item});
+  const ItemPage(
+      {super.key, required this.title, required this.onSubmit, this.item});
 
   @override
   State<ItemPage> createState() => _ItemPageState();
@@ -20,16 +22,19 @@ class _ItemPageState extends State<ItemPage> {
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  CategoryProvider? _categoryProvider;
 
   @override
   void initState() {
     super.initState();
+    _categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+
     _controller = TextEditingController(text: widget.item?.title);
 
-    if(widget.item != null){
+    if (widget.item != null) {
       selectedDate = widget.item?.dateTime;
 
-      if(selectedDate != null && !widget.item!.allDay){
+      if (selectedDate != null && !widget.item!.allDay) {
         selectedTime = TimeOfDay.fromDateTime(selectedDate!);
       }
     }
@@ -39,6 +44,20 @@ class _ItemPageState extends State<ItemPage> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  List<DropdownMenuItem<String>> _getDropdownItems() {
+    var categories = _categoryProvider?.getCategories();
+    var items = <DropdownMenuItem<String>>[];
+
+    for (var category in categories!) {
+      items.add(DropdownMenuItem(
+        value: category.name,
+        child: Text(category.name),
+      ));
+    }
+
+    return items;
   }
 
   DateTime _combineDateTimeAndTimeOfDay(DateTime date, TimeOfDay time) {
@@ -54,16 +73,14 @@ class _ItemPageState extends State<ItemPage> {
   void _saveItem() {
     var fullDateTime = selectedDate;
 
-    if(selectedDate != null && selectedTime != null) {
-      fullDateTime = _combineDateTimeAndTimeOfDay(
-          selectedDate!, selectedTime!);
+    if (selectedDate != null && selectedTime != null) {
+      fullDateTime = _combineDateTimeAndTimeOfDay(selectedDate!, selectedTime!);
     }
 
     var newItem = TodoItem(
-      title: _controller.text,
-      dateTime: fullDateTime,
-      allDay: selectedTime == null && selectedDate != null
-    );
+        title: _controller.text,
+        dateTime: fullDateTime,
+        allDay: selectedTime == null && selectedDate != null);
 
     widget.onSubmit(newItem);
   }
@@ -74,8 +91,9 @@ class _ItemPageState extends State<ItemPage> {
         ? 'Data'
         : DateFormat('dd/MM/yyyy').format(selectedDate!);
 
-    String timeText =
-        selectedTime == null || selectedDate == null ? 'Hora' : selectedTime!.format(context);
+    String timeText = selectedTime == null || selectedDate == null
+        ? 'Hora'
+        : selectedTime!.format(context);
 
     return Consumer<TodoProvider>(builder: (context, todoProvider, child) {
       return Scaffold(
@@ -131,18 +149,20 @@ class _ItemPageState extends State<ItemPage> {
                         width: 8,
                       ),
                       ElevatedButton(
-                        onPressed: selectedDate != null ? () async {
-                          var pickedTime = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              initialEntryMode: TimePickerEntryMode.dial);
+                        onPressed: selectedDate != null
+                            ? () async {
+                                var pickedTime = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                    initialEntryMode: TimePickerEntryMode.dial);
 
-                          setState(() {
-                            selectedTime = pickedTime;
-                          });
-                        } : null,
+                                setState(() {
+                                  selectedTime = pickedTime;
+                                });
+                              }
+                            : null,
                         child: Text(timeText),
-                      )
+                      ),
                     ],
                   )
                 ],
