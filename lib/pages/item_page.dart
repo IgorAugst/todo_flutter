@@ -5,6 +5,8 @@ import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 
+import '../models/category.dart';
+
 class ItemPage extends StatefulWidget {
   final String title;
   final TodoItem? item;
@@ -46,14 +48,14 @@ class _ItemPageState extends State<ItemPage> {
     super.dispose();
   }
 
-  List<DropdownMenuItem<String>> _getDropdownItems() {
+  List<DropdownMenuEntry<Category>> _getDropdownItems() {
     var categories = _categoryProvider?.getCategories();
-    var items = <DropdownMenuItem<String>>[];
+    var items = <DropdownMenuEntry<Category>>[];
 
     for (var category in categories!) {
-      items.add(DropdownMenuItem(
-        value: category.name,
-        child: Text(category.name),
+      items.add(DropdownMenuEntry<Category>(
+        value: category,
+        label: category.name,
       ));
     }
 
@@ -106,6 +108,7 @@ class _ItemPageState extends State<ItemPage> {
           child: Form(
               key: _formItemPageKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextFormField(
                     controller: _controller,
@@ -164,6 +167,16 @@ class _ItemPageState extends State<ItemPage> {
                         child: Text(timeText),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DropdownMenu<Category>(
+                    label: const Text('Categoria'),
+                    onSelected: (Category? value) {
+                      setState(() {});
+                    },
+                    dropdownMenuEntries: _getDropdownItems(),
                   )
                 ],
               )),
