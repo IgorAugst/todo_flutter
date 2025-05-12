@@ -5,8 +5,6 @@ import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 
-import '../models/category.dart';
-
 class ItemPage extends StatefulWidget {
   final String title;
   final TodoItem? item;
@@ -21,6 +19,7 @@ class ItemPage extends StatefulWidget {
 
 class _ItemPageState extends State<ItemPage> {
   late TextEditingController _controller;
+  late TextEditingController _dropdownController;
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -32,6 +31,7 @@ class _ItemPageState extends State<ItemPage> {
     _categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
     _controller = TextEditingController(text: widget.item?.title);
+    _dropdownController = TextEditingController();
 
     if (widget.item != null) {
       selectedDate = widget.item?.dateTime;
@@ -48,15 +48,17 @@ class _ItemPageState extends State<ItemPage> {
     super.dispose();
   }
 
-  List<DropdownMenuEntry<Category>> _getDropdownItems() {
+  List<DropdownMenuEntry<int>> _getDropdownItems() {
     var categories = _categoryProvider?.getCategories();
-    var items = <DropdownMenuEntry<Category>>[];
+    var items = <DropdownMenuEntry<int>>[];
 
     for (var category in categories!) {
-      items.add(DropdownMenuEntry<Category>(
-        value: category,
-        label: category.name,
-      ));
+      if (category.id != null) {
+        items.add(DropdownMenuEntry<int>(
+          value: category.id!,
+          label: category.name,
+        ));
+      }
     }
 
     return items;
@@ -171,12 +173,13 @@ class _ItemPageState extends State<ItemPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  DropdownMenu<Category>(
+                  DropdownMenu<int>(
                     label: const Text('Categoria'),
-                    onSelected: (Category? value) {
+                    onSelected: (int? value) {
                       setState(() {});
                     },
                     dropdownMenuEntries: _getDropdownItems(),
+                    initialSelection: widget.item?.categoryId,
                   )
                 ],
               )),

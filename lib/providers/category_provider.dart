@@ -24,6 +24,10 @@ class CategoryProvider extends ChangeNotifier {
         .toList();
   }
 
+  Category getCategoryById(int id) {
+    return _categories.firstWhere((category) => category.id == id);
+  }
+
   Future<List<Category>> loadCategories() async {
     _categories.addAll(await _categoryRepository.getCategories());
     notifyListeners();
