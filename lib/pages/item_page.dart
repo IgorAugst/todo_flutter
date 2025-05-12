@@ -19,11 +19,11 @@ class ItemPage extends StatefulWidget {
 
 class _ItemPageState extends State<ItemPage> {
   late TextEditingController _controller;
-  late TextEditingController _dropdownController;
   final GlobalKey<FormState> _formItemPageKey = GlobalKey<FormState>();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   CategoryProvider? _categoryProvider;
+  int? categoryId;
 
   @override
   void initState() {
@@ -31,7 +31,8 @@ class _ItemPageState extends State<ItemPage> {
     _categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
     _controller = TextEditingController(text: widget.item?.title);
-    _dropdownController = TextEditingController();
+
+    categoryId = widget.item?.categoryId;
 
     if (widget.item != null) {
       selectedDate = widget.item?.dateTime;
@@ -82,9 +83,11 @@ class _ItemPageState extends State<ItemPage> {
     }
 
     var newItem = TodoItem(
-        title: _controller.text,
-        dateTime: fullDateTime,
-        allDay: selectedTime == null && selectedDate != null);
+      title: _controller.text,
+      dateTime: fullDateTime,
+      allDay: selectedTime == null && selectedDate != null,
+      categoryId: categoryId,
+    );
 
     widget.onSubmit(newItem);
   }
@@ -176,7 +179,7 @@ class _ItemPageState extends State<ItemPage> {
                   DropdownMenu<int>(
                     label: const Text('Categoria'),
                     onSelected: (int? value) {
-                      setState(() {});
+                      categoryId = value;
                     },
                     dropdownMenuEntries: _getDropdownItems(),
                     initialSelection: widget.item?.categoryId,
