@@ -19,6 +19,9 @@ class CategoryRepositorySQLite implements CategoryRepository {
   Future<void> deleteCategory(int id) async {
     final db = await AppDatabase.getDatabase();
 
+    await db.execute(
+        'UPDATE todos SET categoryId = NULL WHERE categoryId = ?', [id]);
+
     await db.delete('categories', where: 'id = ?', whereArgs: [id]);
   }
 
