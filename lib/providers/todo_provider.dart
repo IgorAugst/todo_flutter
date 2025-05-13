@@ -22,10 +22,15 @@ class TodoProvider extends ChangeNotifier {
       return _items;
     }
 
-    if (category.isDone == null) {
-      return _items;
+    if (category.isDefault) {
+      if (category.isDone != null) {
+        return _items.where((item) => item.isDone == category.isDone).toList();
+      } else {
+        return _items;
+      }
+    } else {
+      return _items.where((item) => item.categoryId == category.id).toList();
     }
-    return _items.where((item) => item.isDone == category.isDone).toList();
   }
 
   int getTodoItemCount({Category? category}) {
