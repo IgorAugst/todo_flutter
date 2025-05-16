@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/repositories/category_repository.dart';
-import 'package:todo_flutter/repositories/category_repository_sqlite.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final List<Category> _categories = [];
 
-  final CategoryRepository _categoryRepository = CategoryRepositorySQLite();
+  final CategoryRepository categoryRepository;
 
-  CategoryProvider() {
+  CategoryProvider({required this.categoryRepository}) {
     _addDefaultCategories();
     loadCategories();
   }
@@ -29,7 +28,7 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   Future<List<Category>> loadCategories() async {
-    _categories.addAll(await _categoryRepository.getCategories());
+    _categories.addAll(await categoryRepository.getCategories());
     notifyListeners();
     return _categories;
   }
@@ -52,13 +51,13 @@ class CategoryProvider extends ChangeNotifier {
       isDefault: false,
     );
 
-    await _categoryRepository.addCategory(newCategory);
+    await categoryRepository.addCategory(newCategory);
     _categories.add(newCategory);
     notifyListeners();
   }
 
   void deleteCategory(Category category) async {
-    await _categoryRepository.deleteCategory(category.id!);
+    await categoryRepository.deleteCategory(category.id!);
 
     _categories.remove(category);
     notifyListeners();
@@ -66,6 +65,6 @@ class CategoryProvider extends ChangeNotifier {
 
   void updateCategory(Category category, String newName) async {
     category.name = newName;
-    await _categoryRepository.updateCategory(category);
+    await categoryRepository.updateCategory(category);
   }
 }

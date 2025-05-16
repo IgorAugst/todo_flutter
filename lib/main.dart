@@ -17,6 +17,9 @@ import 'package:todo_flutter/pages/item_page.dart';
 import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/selection_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
+import 'package:todo_flutter/repositories/category_repository.dart';
+import 'package:todo_flutter/repositories/category_repository_sqlite.dart';
+import 'package:todo_flutter/repositories/category_repository_web.dart';
 import 'package:todo_flutter/repositories/notification_repository.dart';
 import 'package:todo_flutter/repositories/notification_repository_local.dart';
 import 'package:todo_flutter/repositories/notification_repository_web.dart';
@@ -30,6 +33,7 @@ void main() async {
 
   late NotificationRepository notificationRepository;
   late TodoRepository todoRepository;
+  late CategoryRepository categoryRepository;
 
   if (Foundation.kIsWeb || !Platform.isAndroid) {
     notificationRepository = NotificationRepositoryWeb();
@@ -39,11 +43,11 @@ void main() async {
 
   if (Foundation.kIsWeb) {
     todoRepository = TodoRepositoryWeb();
+    categoryRepository = CategoryRepositoryWeb();
   } else {
     todoRepository = TodoRepositorySqlite();
+    categoryRepository = CategoryRepositorySQLite();
   }
-
-  todoRepository = TodoRepositoryWeb(); // testando com web
 
   await notificationRepository.initNotifications();
   tz.initializeTimeZones();
@@ -66,7 +70,9 @@ void main() async {
                   todoRepository: todoRepository,
                   notificationRepository: notificationRepository)),
           ChangeNotifierProvider(create: (_) => SelectionProvider()),
-          ChangeNotifierProvider(create: (_) => CategoryProvider()),
+          ChangeNotifierProvider(
+              create: (_) =>
+                  CategoryProvider(categoryRepository: categoryRepository)),
         ],
         child: MyApp(),
       ),
