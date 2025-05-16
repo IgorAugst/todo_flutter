@@ -13,13 +13,16 @@ class AppDatabase {
         )''');
   }
 
-  static void _createCategoryTable(Database db, int version) {
-    db.execute('''CREATE TABLE categories(
+  static void _createCategoryTable(Database db, int version) async {
+    await db.execute('''CREATE TABLE categories(
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         isDone INTEGER DEFAULT 0,
         isDefault INTEGER DEFAULT 0
         )''');
+
+    await db.execute('''INSERT INTO categories (id, name, isDefault) VALUES
+        (1, 'Importantes', 0)''');
   }
 
   static void _updateTodoTable(Database db, int oldVersion, int newVersion) {
