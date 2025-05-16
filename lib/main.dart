@@ -29,54 +29,54 @@ import 'package:todo_flutter/repositories/todo_repository_web.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  late NotificationRepository notificationRepository;
-  late TodoRepository todoRepository;
-  late CategoryRepository categoryRepository;
-
-  if (Foundation.kIsWeb || !Platform.isAndroid) {
-    notificationRepository = NotificationRepositoryWeb();
-  } else {
-    notificationRepository = NotificationRepositoryLocal();
-  }
-
-  if (Foundation.kIsWeb) {
-    todoRepository = TodoRepositoryWeb();
-    categoryRepository = CategoryRepositoryWeb();
-  } else {
-    todoRepository = TodoRepositorySqlite();
-    categoryRepository = CategoryRepositorySQLite();
-  }
-
-  await notificationRepository.initNotifications();
-  tz.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
-
   await SentryFlutter.init(
     (options) {
       options.dsn =
           'https://91304806a6f9ccfe6c0edc8f1203b2d3@o4509120722173952.ingest.us.sentry.io/4509125670928384';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-      // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
       options.experimental.replay.onErrorSampleRate = 1.0;
     },
-    appRunner: () => runApp(SentryWidget(
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-              create: (_) => TodoProvider(
-                  todoRepository: todoRepository,
-                  notificationRepository: notificationRepository)),
-          ChangeNotifierProvider(create: (_) => SelectionProvider()),
-          ChangeNotifierProvider(
-              create: (_) =>
-                  CategoryProvider(categoryRepository: categoryRepository)),
-        ],
-        child: MyApp(),
-      ),
-    )),
+    appRunner: () async {
+      WidgetsFlutterBinding.ensureInitialized();
+
+      late NotificationRepository notificationRepository;
+      late TodoRepository todoRepository;
+      late CategoryRepository categoryRepository;
+
+      if (Foundation.kIsWeb || !Platform.isAndroid) {
+        notificationRepository = NotificationRepositoryWeb();
+      } else {
+        notificationRepository = NotificationRepositoryLocal();
+      }
+
+      if (Foundation.kIsWeb) {
+        todoRepository = TodoRepositoryWeb();
+        categoryRepository = CategoryRepositoryWeb();
+      } else {
+        todoRepository = TodoRepositorySqlite();
+        categoryRepository = CategoryRepositorySQLite();
+      }
+
+      await notificationRepository.initNotifications();
+      tz.initializeTimeZones();
+      tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
+
+      runApp(SentryWidget(
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+                create: (_) => TodoProvider(
+                    todoRepository: todoRepository,
+                    notificationRepository: notificationRepository)),
+            ChangeNotifierProvider(create: (_) => SelectionProvider()),
+            ChangeNotifierProvider(
+                create: (_) =>
+                    CategoryProvider(categoryRepository: categoryRepository)),
+          ],
+          child: MyApp(),
+        ),
+      ));
+    },
   );
 }
 
