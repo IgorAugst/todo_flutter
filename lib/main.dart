@@ -20,18 +20,30 @@ import 'package:todo_flutter/providers/todo_provider.dart';
 import 'package:todo_flutter/repositories/notification_repository.dart';
 import 'package:todo_flutter/repositories/notification_repository_local.dart';
 import 'package:todo_flutter/repositories/notification_repository_web.dart';
+import 'package:todo_flutter/repositories/todo_repository.dart';
+import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
+import 'package:todo_flutter/repositories/todo_repository_web.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   late NotificationRepository notificationRepository;
+  late TodoRepository todoRepository;
 
   if (Foundation.kIsWeb || !Platform.isAndroid) {
     notificationRepository = NotificationRepositoryWeb();
   } else {
     notificationRepository = NotificationRepositoryLocal();
   }
+
+  if (Foundation.kIsWeb) {
+    todoRepository = TodoRepositoryWeb();
+  } else {
+    todoRepository = TodoRepositorySqlite();
+  }
+
+  todoRepository = TodoRepositoryWeb(); // testando com web
 
   await notificationRepository.initNotifications();
   tz.initializeTimeZones();
@@ -50,8 +62,9 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-              create: (_) =>
-                  TodoProvider(notificationRepository: notificationRepository)),
+              create: (_) => TodoProvider(
+                  todoRepository: todoRepository,
+                  notificationRepository: notificationRepository)),
           ChangeNotifierProvider(create: (_) => SelectionProvider()),
           ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ],

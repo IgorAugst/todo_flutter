@@ -3,14 +3,14 @@ import 'package:todo_flutter/models/category.dart';
 import 'package:todo_flutter/models/todo_item.dart';
 import 'package:todo_flutter/repositories/notification_repository.dart';
 import 'package:todo_flutter/repositories/todo_repository.dart';
-import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 
 class TodoProvider extends ChangeNotifier {
   List<TodoItem> _items = [];
-  final TodoRepository todoRepository = TodoRepositorySqlite();
+  final TodoRepository todoRepository;
   final NotificationRepository notificationRepository;
 
-  TodoProvider({required this.notificationRepository}) {
+  TodoProvider(
+      {required this.todoRepository, required this.notificationRepository}) {
     loadItems();
   }
 
