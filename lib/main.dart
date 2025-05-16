@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,11 +18,22 @@ import 'package:todo_flutter/providers/category_provider.dart';
 import 'package:todo_flutter/providers/selection_provider.dart';
 import 'package:todo_flutter/providers/todo_provider.dart';
 import 'package:todo_flutter/repositories/notification_repository.dart';
+import 'package:todo_flutter/repositories/notification_repository_local.dart';
+import 'package:todo_flutter/repositories/notification_repository_web.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationRepository.initNotifications();
+
+  late NotificationRepository notificationRepository;
+
+  if (Foundation.kIsWeb || !Platform.isAndroid) {
+    notificationRepository = NotificationRepositoryWeb();
+  } else {
+    notificationRepository = NotificationRepositoryLocal();
+  }
+
+  await notificationRepository.initNotifications();
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('America/Sao_Paulo'));
 
@@ -36,7 +49,9 @@ void main() async {
     appRunner: () => runApp(SentryWidget(
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => TodoProvider()),
+          ChangeNotifierProvider(
+              create: (_) =>
+                  TodoProvider(notificationRepository: notificationRepository)),
           ChangeNotifierProvider(create: (_) => SelectionProvider()),
           ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ],

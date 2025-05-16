@@ -8,8 +8,9 @@ import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 class TodoProvider extends ChangeNotifier {
   List<TodoItem> _items = [];
   final TodoRepository todoRepository = TodoRepositorySqlite();
+  final NotificationRepository notificationRepository;
 
-  TodoProvider() {
+  TodoProvider({required this.notificationRepository}) {
     loadItems();
   }
 
@@ -65,7 +66,7 @@ class TodoProvider extends ChangeNotifier {
     await todoRepository.deleteTodo(item.id!);
     _items.remove(item);
     notifyListeners();
-    await NotificationRepository.cancelNotification(item.id!);
+    await notificationRepository.cancelNotification(item.id!);
   }
 
   Future<void> toggleItem(TodoItem item) async {
@@ -75,7 +76,7 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
 
     if (item.isDone) {
-      NotificationRepository.cancelNotification(item.id!);
+      notificationRepository.cancelNotification(item.id!);
     } else {
       scheduleNotification(item);
     }
@@ -92,7 +93,7 @@ class TodoProvider extends ChangeNotifier {
   void scheduleNotification(TodoItem item) {
     if (item.dateTime != null &&
         item.dateTime!.compareTo(DateTime.now()) == 1) {
-      NotificationRepository.scheduleNotification(
+      notificationRepository.scheduleNotification(
           id: item.id ?? 0,
           title: item.title,
           body: item.dateTimeText(),
