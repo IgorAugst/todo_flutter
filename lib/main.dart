@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
 import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 import 'package:provider/provider.dart';
@@ -244,6 +245,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                               ));
                     },
+                  ),
+                  Spacer(flex: 1),
+                  ListTile(
+                    leading: FaIcon(
+                      FontAwesomeIcons.github,
+                      color: Colors.white,
+                    ),
+                    title: Text("Github"),
                   )
                 ],
               ),
