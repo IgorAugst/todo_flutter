@@ -28,6 +28,7 @@ import 'package:todo_flutter/repositories/todo_repository.dart';
 import 'package:todo_flutter/repositories/todo_repository_sqlite.dart';
 import 'package:todo_flutter/repositories/todo_repository_web.dart';
 import 'package:todo_flutter/widgets/item_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   await SentryFlutter.init(
@@ -116,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late SelectionProvider _selectionProvider;
   late CategoryProvider _categoryProvider;
   bool _isSelecting = false;
+  final Uri _githubUrl = Uri.parse('https://github.com/IgorAugst/todo_flutter');
 
   @override
   void initState() {
@@ -184,6 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_githubUrl)) {
+      throw 'Could not launch $_githubUrl';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer3<TodoProvider, SelectionProvider, CategoryProvider>(builder:
@@ -250,9 +258,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   ListTile(
                     leading: FaIcon(
                       FontAwesomeIcons.github,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     title: Text("Github"),
+                    onTap: () {
+                      _launchUrl();
+                    },
                   )
                 ],
               ),
