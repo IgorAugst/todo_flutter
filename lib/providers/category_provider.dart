@@ -66,5 +66,6 @@ class CategoryProvider extends ChangeNotifier {
   void updateCategory(Category category, String newName) async {
     category.name = newName;
     await categoryRepository.updateCategory(category);
+    notifyListeners();
   }
 }
