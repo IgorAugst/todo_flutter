@@ -49,14 +49,16 @@ class _ItemPageState extends State<ItemPage> {
     super.dispose();
   }
 
-  List<DropdownMenuEntry<int>> _getDropdownItems() {
+  List<DropdownMenuEntry<int?>> _getDropdownItems() {
     var categories = _categoryProvider?.getCategories();
-    var items = <DropdownMenuEntry<int>>[];
+    var items = <DropdownMenuEntry<int?>>[];
+
+    items.add(DropdownMenuEntry<int?>(value: null, label: "Nenhum"));
 
     for (var category in categories!) {
       if (category.id != null) {
-        items.add(DropdownMenuEntry<int>(
-          value: category.id!,
+        items.add(DropdownMenuEntry<int?>(
+          value: category.id,
           label: category.name,
         ));
       }
@@ -176,7 +178,7 @@ class _ItemPageState extends State<ItemPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  DropdownMenu<int>(
+                  DropdownMenu<int?>(
                     label: const Text('Categoria'),
                     onSelected: (int? value) {
                       categoryId = value;
